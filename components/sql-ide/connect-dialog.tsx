@@ -14,7 +14,41 @@ export function ConnectDialog({ onConnect, onCancel, onHelp, onOptions }: Connec
   const dialogRef = useRef<HTMLDivElement>(null)
   const [position, setPosition] = useState({ x: 0, y: 0 })
   const [dragging, setDragging] = useState(false)
+  const [serverTypeOpen, setServerTypeOpen] = useState(false)
+  const [serverTypeHover, setServerTypeHover] = useState(0)
+  const [serverNameOpen, setServerNameOpen] = useState(false)
+  const [serverNameHover, setServerNameHover] = useState(0)
+  const [authOpen, setAuthOpen] = useState(false)
+  const [authHover, setAuthHover] = useState(0)
+  const [userNameOpen, setUserNameOpen] = useState(false)
+  const [userNameHover, setUserNameHover] = useState(0)
   const dragOffsetRef = useRef({ x: 0, y: 0 })
+  const serverTypeRef = useRef<HTMLDivElement>(null)
+  const serverNameRef = useRef<HTMLDivElement>(null)
+  const authRef = useRef<HTMLDivElement>(null)
+  const userNameRef = useRef<HTMLDivElement>(null)
+  const serverTypeOptions = [
+    "Database Engine",
+    "Analysis Services",
+    "Reporting Services",
+    "Integration Services",
+    "Azure-SSIS Integration Runtime",
+  ]
+  const serverNameOptions = [
+    "APON\\SQLEXPRESS",
+    "<Browse for more...>",
+  ]
+  const authOptions = [
+    "Windows Authentication",
+    "SQL Server Authentication",
+    "Microsoft Entra MFA",
+    "Microsoft Entra Password",
+    "Microsoft Entra Integrated",
+    "Microsoft Entra Service Principal",
+    "Microsoft Entra Managed Identity",
+    "Microsoft Entra Default",
+  ]
+  const userNameOptions = ["APON\\ASUS"]
 
   useEffect(() => {
     const centerDialog = () => {
@@ -54,6 +88,26 @@ export function ConnectDialog({ onConnect, onCancel, onHelp, onOptions }: Connec
     }
   }, [dragging])
 
+  useEffect(() => {
+    const onMouseDown = (event: MouseEvent) => {
+      const target = event.target as Node
+      if (!serverTypeRef.current?.contains(target)) {
+        setServerTypeOpen(false)
+      }
+      if (!serverNameRef.current?.contains(target)) {
+        setServerNameOpen(false)
+      }
+      if (!authRef.current?.contains(target)) {
+        setAuthOpen(false)
+      }
+      if (!userNameRef.current?.contains(target)) {
+        setUserNameOpen(false)
+      }
+    }
+    window.addEventListener("mousedown", onMouseDown)
+    return () => window.removeEventListener("mousedown", onMouseDown)
+  }, [])
+
   const startDrag = (event: ReactMouseEvent<HTMLDivElement>) => {
     if (!dialogRef.current) return
     const rect = dialogRef.current.getBoundingClientRect()
@@ -86,27 +140,111 @@ export function ConnectDialog({ onConnect, onCancel, onHelp, onOptions }: Connec
 
           <div className="connect-form">
             <label>Server type:</label>
-            <div className="connect-input connect-select select-ssms">
-              <span>Database Engine</span>
-              <span className="connect-triangle"></span>
+            <div ref={serverTypeRef} className="connect-select-wrap">
+              <button
+                type="button"
+                className="connect-input connect-select select-ssms connect-select-button"
+                onClick={() => setServerTypeOpen((prev) => !prev)}
+              >
+                <span>Database Engine</span>
+                <span className="connect-triangle"></span>
+              </button>
+              {serverTypeOpen ? (
+                <div className="ssms-dropdown" role="listbox" aria-label="Server type">
+                  {serverTypeOptions.map((option, index) => (
+                    <button
+                      key={option}
+                      type="button"
+                      className={`ssms-dropdown-item${index === serverTypeHover ? " is-hover" : ""}`}
+                      onMouseEnter={() => setServerTypeHover(index)}
+                      onClick={() => setServerTypeOpen(false)}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
             </div>
 
             <label>Server name:</label>
-            <div className="connect-input connect-select select-ssms">
-              <span>APON\SQLEXPRESS</span>
-              <span className="connect-triangle"></span>
+            <div ref={serverNameRef} className="connect-select-wrap">
+              <button
+                type="button"
+                className="connect-input connect-select select-ssms connect-select-button"
+                onClick={() => setServerNameOpen((prev) => !prev)}
+              >
+                <span>APON\SQLEXPRESS</span>
+                <span className="connect-triangle"></span>
+              </button>
+              {serverNameOpen ? (
+                <div className="ssms-dropdown" role="listbox" aria-label="Server name">
+                  {serverNameOptions.map((option, index) => (
+                    <button
+                      key={option}
+                      type="button"
+                      className={`ssms-dropdown-item${index === serverNameHover ? " is-hover" : ""}`}
+                      onMouseEnter={() => setServerNameHover(index)}
+                      onClick={() => setServerNameOpen(false)}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
             </div>
 
             <label>Authentication:</label>
-            <div className="connect-input connect-select select-ssms">
-              <span>Windows Authentication</span>
-              <span className="connect-triangle"></span>
+            <div ref={authRef} className="connect-select-wrap">
+              <button
+                type="button"
+                className="connect-input connect-select select-ssms connect-select-button"
+                onClick={() => setAuthOpen((prev) => !prev)}
+              >
+                <span>Windows Authentication</span>
+                <span className="connect-triangle"></span>
+              </button>
+              {authOpen ? (
+                <div className="ssms-dropdown" role="listbox" aria-label="Authentication">
+                  {authOptions.map((option, index) => (
+                    <button
+                      key={option}
+                      type="button"
+                      className={`ssms-dropdown-item${index === authHover ? " is-hover" : ""}`}
+                      onMouseEnter={() => setAuthHover(index)}
+                      onClick={() => setAuthOpen(false)}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
             </div>
 
             <label className="connect-disabled-label">User name:</label>
-            <div className="connect-input connect-select connect-disabled-input select-ssms username-offset">
-              <span>APON\ASUS</span>
-              <span className="connect-triangle"></span>
+            <div ref={userNameRef} className="connect-select-wrap username-offset">
+              <button
+                type="button"
+                className="connect-input connect-select connect-disabled-input select-ssms connect-select-button"
+                onClick={() => setUserNameOpen((prev) => !prev)}
+              >
+                <span>APON\ASUS</span>
+                <span className="connect-triangle"></span>
+              </button>
+              {userNameOpen ? (
+                <div className="ssms-dropdown" role="listbox" aria-label="User name">
+                  {userNameOptions.map((option, index) => (
+                    <button
+                      key={option}
+                      type="button"
+                      className={`ssms-dropdown-item${index === userNameHover ? " is-hover" : ""}`}
+                      onMouseEnter={() => setUserNameHover(index)}
+                      onClick={() => setUserNameOpen(false)}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
             </div>
 
             <label className="connect-disabled-label">Password:</label>

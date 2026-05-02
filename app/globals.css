@@ -377,6 +377,48 @@
   width: 100%;
 }
 
+.connect-select-button {
+  width: 100%;
+  text-align: left;
+}
+
+.connect-select-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.ssms-dropdown {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  width: 100%;
+  background: #2f3138;
+  border: 1px solid #0078d7;
+  border-top: 1px solid #0078d7;
+  box-sizing: border-box;
+  padding: 0;
+  z-index: 30;
+}
+
+.ssms-dropdown-item {
+  display: block;
+  width: 100%;
+  height: 20px;
+  padding: 0 8px 0 4px;
+  margin: 0;
+  text-align: left;
+  color: #ffffff;
+  font-size: 12px;
+  line-height: 20px;
+  border: 0;
+  background: transparent;
+}
+
+.ssms-dropdown-item.is-hover,
+.ssms-dropdown-item:hover {
+  background: #0078d7;
+}
+
 .connect-triangle {
   display: none;
 }
@@ -451,7 +493,7 @@ select {
 }
 
 .username-offset {
-  padding-left: 14px !important;
+  padding-left: 2px !important;
 }
 
 .username-offset input,
@@ -479,14 +521,20 @@ select {
   display: flex;
   align-items: center;
   gap: 6px;
-  color: #7f7f7f;
+  color: #666666;
   font-size: 12px;
 }
 
 .connect-remember input {
   width: 12px;
   height: 12px;
-  accent-color: #f9f9f9;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: #f9f9f9 !important;
+  border: 1px solid #bdbdbd;
+  border-radius: 2px;
+  opacity: 1 !important;
 }
 
 .connect-form input[type="password"].connect-input.connect-disabled-input {
