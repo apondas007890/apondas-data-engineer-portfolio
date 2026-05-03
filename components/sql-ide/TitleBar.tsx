@@ -57,7 +57,7 @@ export function TitleBar({ title }: TitleBarProps) {
         <button type="button" onClick={() => {}} className="flex h-[32px] w-[32px] cursor-default items-center justify-center rounded-none text-[#c8cdd6] hover:bg-[#34343a] hover:text-[#e2e6ee]">
           <Copy size={13} strokeWidth={2.5} />
         </button>
-        <button type="button" onClick={() => {}} className="flex h-[32px] w-[32px] cursor-default items-center justify-center rounded-none text-[#c8cdd6] active:bg-[#c42b1c] active:text-[#ffffff]">
+        <button type="button" onClick={() => {}} className="flex h-[32px] w-[32px] cursor-default items-center justify-center rounded-none text-[#c8cdd6] hover:bg-[#34343a] hover:text-[#e2e6ee] active:bg-[#c42b1c] active:text-[#ffffff]">
           <X size={15} strokeWidth={2.5} />
         </button>
       </div>

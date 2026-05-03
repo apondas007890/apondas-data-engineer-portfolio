@@ -132,6 +132,97 @@ function SolutionIcon() {
   )
 }
 
+function CutIcon() {
+  return (
+    <svg width="19" height="19" viewBox="0 0 16 16" aria-hidden="true">
+      <circle cx="4.2" cy="11.1" r="1.6" fill="none" stroke="#bfbfbf" strokeWidth="1" />
+      <circle cx="11.8" cy="11.1" r="1.6" fill="none" stroke="#bfbfbf" strokeWidth="1" />
+      <path d="M5.4 10 12 3.4M10.6 10 4 3.4" stroke="#bfbfbf" strokeWidth="1.1" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function CopyIcon() {
+  return (
+    <svg width="19" height="19" viewBox="0 0 16 16" aria-hidden="true">
+      <rect x="3.2" y="4.8" width="6.8" height="7.2" fill="none" stroke="#bfbfbf" strokeWidth="1" />
+      <rect x="6" y="2.2" width="6.8" height="7.2" fill="none" stroke="#bfbfbf" strokeWidth="1" />
+    </svg>
+  )
+}
+
+function PasteIcon() {
+  return (
+    <svg width="19" height="19" viewBox="0 0 16 16" aria-hidden="true">
+      <rect x="4.2" y="3.6" width="7.6" height="9.2" fill="none" stroke="#bfbfbf" strokeWidth="1" />
+      <rect x="6" y="2" width="4" height="2.2" rx="0.6" fill="none" stroke="#bfbfbf" strokeWidth="1" />
+      <path d="M6.2 6.2h3.6M6.2 8.2h3.6M6.2 10.2h2.8" stroke="#bfbfbf" strokeWidth="0.9" />
+    </svg>
+  )
+}
+
+function ActivityMonitorIcon() {
+  return (
+    <img src="/toolbar-icons/activity-vs.png" alt="" className="h-[18px] w-[18px] object-contain" draggable={false} />
+  )
+}
+
+function FindInFilesIcon() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 16 16" aria-hidden="true">
+      <path d="M3 4h5l1.1-1.2H13v2H3z" fill="#d29a45" />
+      <path d="M3 5h10v4.6H3z" fill="#f0b44f" />
+      <circle cx="6.2" cy="8.45" r="2.1" fill="none" stroke="#57aff0" strokeWidth="1.2" />
+      <path d="m7.8 9.95 1.7 1.7" stroke="#57aff0" strokeWidth="1.2" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function SolutionExplorerIcon() {
+  return (
+    <img src="/toolbar-icons/solution-explorer-vs.png" alt="" className="h-[18px] w-[18px] object-contain" draggable={false} />
+  )
+}
+
+function PropertiesWindowIcon() {
+  return (
+    <img src="/toolbar-icons/properties-wrench.png" alt="" className="h-[13px] w-[13px] object-contain" draggable={false} />
+  )
+}
+
+function ToolboxIcon() {
+  return (
+    <img src="/toolbar-icons/toolbox-bag.png" alt="" className="h-[14px] w-[14px] object-contain" draggable={false} />
+  )
+}
+
+function CommandWindowIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 16 16" aria-hidden="true">
+      <rect x="2.3" y="3" width="11.4" height="10" fill="none" stroke="#cfcfcf" strokeWidth="1" />
+      <path d="m5 6.1 2 1.9-2 2M8.2 10h2.7" fill="none" stroke="#cfcfcf" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function UndoIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 16 16" aria-hidden="true">
+      <path d="M6.3 5.3H3.5m0 0 1.7-1.7M3.5 5.3 5.2 7" fill="none" stroke="#8f8f8f" strokeWidth="1.35" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M6.2 5.3h2.5c2.3 0 3.8 1.4 3.8 3.5 0 1.7-1.1 3.1-2.9 3.5" fill="none" stroke="#8f8f8f" strokeWidth="1.35" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function RedoIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 16 16" aria-hidden="true">
+      <path d="M9.7 5.3h2.8m0 0-1.7-1.7m1.7 1.7L10.8 7" fill="none" stroke="#8f8f8f" strokeWidth="1.35" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M9.8 5.3H7.3C5 5.3 3.5 6.7 3.5 8.8c0 1.7 1.1 3.1 2.9 3.5" fill="none" stroke="#8f8f8f" strokeWidth="1.35" strokeLinecap="round" />
+    </svg>
+  )
+}
+
 function FileDocIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
@@ -158,7 +249,7 @@ function ToolbarRowOne({ onNewQuery }: { onNewQuery: () => void }) {
       </button>
       <div className="mx-1 h-[20px] w-px bg-[#4a4a4a]" />
 
-      <div className="mx-[1px] flex items-center gap-[8px]">
+      <div className="mx-[1px] flex items-center gap-[6px]">
         <div className="flex h-[22px] items-center gap-[2px] hover:bg-[rgba(62,62,64,1)]">
           <button className="flex h-[22px] w-[22px] cursor-default items-center justify-center">
             <img
@@ -209,7 +300,7 @@ function ToolbarRowOne({ onNewQuery }: { onNewQuery: () => void }) {
 
       <button
         onClick={onNewQuery}
-        className="flex h-[22px] cursor-default items-center gap-1.5 px-2 text-[12px] text-[#ececec] hover:bg-[#3a3a40]"
+        className="flex h-[22px] cursor-default items-center gap-1.5 pl-[2px] pr-1 text-[12px] text-[#ececec] hover:bg-[#3a3a40]"
       >
         <FileDocIcon />
         <span>New Query</span>
@@ -231,30 +322,63 @@ function ToolbarRowOne({ onNewQuery }: { onNewQuery: () => void }) {
         <img src="/toolbar-icons/dax-gray.png" alt="" className="h-[20px] w-[20px] object-contain opacity-88" draggable={false} />
       </button>
       <div className="mx-1 h-[18px] w-px bg-[#4a4a4a]" />
+      <div className="flex items-center gap-[1px]">
+        <button className="flex h-[22px] w-[22px] cursor-default items-center justify-center hover:bg-[rgba(62,62,64,1)]">
+          <CutIcon />
+        </button>
+        <button className="flex h-[22px] w-[22px] cursor-default items-center justify-center hover:bg-[rgba(62,62,64,1)]">
+          <CopyIcon />
+        </button>
+        <button className="flex h-[22px] w-[22px] cursor-default items-center justify-center hover:bg-[rgba(62,62,64,1)]">
+          <PasteIcon />
+        </button>
+      </div>
+      <div className="mx-1 h-[18px] w-px bg-[#4a4a4a]" />
 
-      <IconButton><Glyph color="#d0d0d0" /></IconButton>
-      <IconButton><Glyph color="#d0d0d0" /></IconButton>
-      <IconButton><Glyph color="#d0d0d0" /></IconButton>
-      <IconButton><Glyph color="#d0d0d0" /></IconButton>
-      <Divider />
-      <IconButton><Glyph color="#6fa2dd" /></IconButton>
-      <IconButton><Glyph color="#7f7f7f" /></IconButton>
-      <IconButton><Glyph color="#7f7f7f" /></IconButton>
-      <Divider />
-      <IconButton><Glyph color="#d0d0d0" /></IconButton>
-      <IconButton><Glyph color="#d0d0d0" /></IconButton>
-      <Divider />
-
-      <button className="flex h-[24px] min-w-[240px] cursor-default items-center border border-[#4a4a50] bg-[#222226] px-2 text-left text-[12px] text-[#d9d9d9] hover:bg-[#2c2c31]">
-        {"PRINT '>>>>' + CAST(@RowCo..."}
-        <span className="ml-auto text-[#8e8e8e]">▾</span>
+      <div className="ml-[-2px] flex h-[22px] items-center gap-[1px] hover:bg-[rgba(62,62,64,1)]">
+        <button className="flex h-[22px] w-[22px] cursor-default items-center justify-center">
+          <UndoIcon />
+        </button>
+        <button className="flex h-[22px] w-[12px] cursor-default items-center justify-center">
+          <TinyDownArrow />
+        </button>
+      </div>
+      <div className="flex h-[22px] items-center gap-[1px] hover:bg-[rgba(62,62,64,1)]">
+        <button className="flex h-[22px] w-[22px] cursor-default items-center justify-center">
+          <RedoIcon />
+        </button>
+        <button className="flex h-[22px] w-[12px] cursor-default items-center justify-center">
+          <TinyDownArrow />
+        </button>
+      </div>
+      <div className="mx-1 h-[18px] w-px bg-[#4a4a4a]" />
+      <button className="mr-1 flex h-[24px] w-[24px] cursor-default items-center justify-center hover:bg-[rgba(62,62,64,1)]">
+        <FindInFilesIcon />
       </button>
 
-      <Divider />
-      <IconButton><Glyph color="#b485d7" /></IconButton>
-      <IconButton><Glyph /></IconButton>
-      <IconButton><Glyph color="#bfbfbf" /></IconButton>
-      <IconButton><Glyph /></IconButton>
+      <button className="mr-1 flex h-[24px] min-w-[194px] cursor-default items-center border border-[#3c3c3f] bg-[#333337] pl-2 pr-0 text-left text-[12px] text-[#afb6b9] hover:!border-[#5a5f6f] hover:!bg-[#2f3138]">
+        {"PRINT '>>>>' + CAST(@RowCc"}
+        <span className="ml-[1px] flex h-full w-[12px] items-center justify-center text-[13px] leading-none text-[#afb6b9]">▾</span>
+      </button>
+
+      <div className="mx-1 h-[18px] w-px bg-[#4a4a4a]" />
+      <button className="flex h-[22px] w-[22px] cursor-default items-center justify-center hover:bg-[rgba(62,62,64,1)]">
+        <SolutionExplorerIcon />
+      </button>
+      <button className="flex h-[22px] w-[22px] cursor-default items-center justify-center hover:bg-[rgba(62,62,64,1)]">
+        <PropertiesWindowIcon />
+      </button>
+      <button className="flex h-[22px] w-[22px] cursor-default items-center justify-center hover:bg-[rgba(62,62,64,1)]">
+        <ToolboxIcon />
+      </button>
+      <div className="flex h-[22px] items-center gap-[1px] hover:bg-[rgba(62,62,64,1)]">
+        <button className="flex h-[22px] w-[22px] cursor-default items-center justify-center">
+          <CommandWindowIcon />
+        </button>
+        <button className="flex h-[22px] w-[12px] cursor-default items-center justify-center">
+          <TinyDownArrow />
+        </button>
+      </div>
     </div>
   )
 }
