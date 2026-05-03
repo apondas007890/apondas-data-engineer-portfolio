@@ -23,6 +23,9 @@ export function ConnectDialog({ onConnect, onCancel, onHelp, onOptions }: Connec
   const [userNameOpen, setUserNameOpen] = useState(false)
   const [userNameHover, setUserNameHover] = useState(0)
   const dragOffsetRef = useRef({ x: 0, y: 0 })
+  const dialogSizeRef = useRef({ width: 560, height: 370 })
+  const dragRafRef = useRef<number | null>(null)
+  const pendingPositionRef = useRef({ x: 0, y: 0 })
   const serverTypeRef = useRef<HTMLDivElement>(null)
   const serverNameRef = useRef<HTMLDivElement>(null)
   const authRef = useRef<HTMLDivElement>(null)
@@ -68,15 +71,19 @@ export function ConnectDialog({ onConnect, onCancel, onHelp, onOptions }: Connec
     if (!dragging) return
 
     const onMouseMove = (event: MouseEvent) => {
-      const dialog = dialogRef.current
-      if (!dialog) return
-      const rect = dialog.getBoundingClientRect()
-      const maxX = Math.max(0, window.innerWidth - rect.width)
-      const maxY = Math.max(0, window.innerHeight - rect.height)
-      setPosition({
+      const maxX = Math.max(0, window.innerWidth - dialogSizeRef.current.width)
+      const maxY = Math.max(0, window.innerHeight - dialogSizeRef.current.height)
+      pendingPositionRef.current = {
         x: Math.min(Math.max(0, event.clientX - dragOffsetRef.current.x), maxX),
         y: Math.min(Math.max(0, event.clientY - dragOffsetRef.current.y), maxY),
-      })
+      }
+
+      if (dragRafRef.current === null) {
+        dragRafRef.current = window.requestAnimationFrame(() => {
+          setPosition(pendingPositionRef.current)
+          dragRafRef.current = null
+        })
+      }
     }
 
     const onMouseUp = () => setDragging(false)
@@ -85,6 +92,10 @@ export function ConnectDialog({ onConnect, onCancel, onHelp, onOptions }: Connec
     return () => {
       window.removeEventListener("mousemove", onMouseMove)
       window.removeEventListener("mouseup", onMouseUp)
+      if (dragRafRef.current !== null) {
+        window.cancelAnimationFrame(dragRafRef.current)
+        dragRafRef.current = null
+      }
     }
   }, [dragging])
 
@@ -110,7 +121,9 @@ export function ConnectDialog({ onConnect, onCancel, onHelp, onOptions }: Connec
 
   const startDrag = (event: ReactMouseEvent<HTMLDivElement>) => {
     if (!dialogRef.current) return
+    event.preventDefault()
     const rect = dialogRef.current.getBoundingClientRect()
+    dialogSizeRef.current = { width: rect.width, height: rect.height }
     dragOffsetRef.current = { x: event.clientX - rect.left, y: event.clientY - rect.top }
     setDragging(true)
   }
@@ -122,8 +135,8 @@ export function ConnectDialog({ onConnect, onCancel, onHelp, onOptions }: Connec
         className="connect-window absolute"
         style={{ left: `${position.x}px`, top: `${position.y}px`, width: "560px" }}
       >
-        <div className="connect-titlebar" onMouseDown={startDrag}>
-          <div className="connect-title-left">
+        <div className="connect-titlebar" onMouseDown={startDrag} style={{ cursor: "default" }}>
+          <div className="connect-title-left" style={{ cursor: "default" }}>
             <SsrmServerIcon />
             <span>Connect to Server</span>
           </div>

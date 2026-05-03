@@ -154,8 +154,8 @@ export default function SQLIDEPage() {
         />
       )}
       <div
-        className={`flex h-screen flex-col font-['Segoe_UI',system-ui,sans-serif] text-[12px] ${
-          isDark ? "bg-[#1e1e1e] text-[#cccccc]" : "bg-[#f3f3f3] text-[#1e1e1e]"
+        className={`sql-ide-root flex h-screen flex-col font-['Segoe_UI',system-ui,sans-serif] text-[12px] ${
+          isDark ? "bg-[#2d2d30] text-[#cccccc]" : "bg-[#f3f3f3] text-[#1e1e1e]"
         }`}
       >
         <Topbar
