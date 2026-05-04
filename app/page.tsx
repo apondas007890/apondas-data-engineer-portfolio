@@ -62,7 +62,7 @@ export default function SQLIDEPage() {
   const [rowCount, setRowCount] = useState(0)
   const [editorZoom, setEditorZoom] = useState(113)
   const [cursor, setCursor] = useState<CursorPosition>({ line: 1, col: 1, ch: 1 })
-  const [currentDatabase, setCurrentDatabase] = useState("MyDatabase")
+  const [currentDatabase, setCurrentDatabase] = useState("Portfolio")
 
   const activeTab = tabs.find((tab) => tab.id === activeTabId)
 

@@ -37,9 +37,7 @@ export function StatusBar({ rowCount, currentDatabase, zoom, onZoomChange, curso
     <div className="flex w-full flex-col">
       {/* Connection Status Bar - Khaki yellow - FULL WIDTH outside Object Explorer */}
       <div
-        className={`flex h-[18px] min-w-0 items-center justify-between px-2 text-[11px] ${
-          isDark ? "bg-[#f0e68c] text-[#1e1e1e]" : "bg-[#007acc] text-white"
-        }`}
+        className="flex h-[18px] min-w-0 items-center justify-between bg-[#f0e68c] px-2 text-[11px] text-[#1e1e1e]"
       >
         <div className="flex min-w-0 items-center gap-2">
           <div className="relative flex items-center" ref={zoomMenuRef}>

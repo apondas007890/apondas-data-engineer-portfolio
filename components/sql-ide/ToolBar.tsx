@@ -205,6 +205,34 @@ function CommandWindowIcon() {
   )
 }
 
+function PlugIcon({ withPencil = false }: { withPencil?: boolean }) {
+  const plugColor = withPencil ? "#c7c7c7" : "#5f6066"
+  return (
+    <span className="relative flex h-[17px] w-[17px] items-center justify-center">
+      <svg className="h-[16px] w-[16px]" viewBox="0 0 16 16" aria-hidden="true">
+        <rect x="4.6" y="1.4" width="2.2" height="3.2" rx="0.8" fill={plugColor} />
+        <rect x="9.2" y="1.4" width="2.2" height="3.2" rx="0.8" fill={plugColor} />
+        <rect x="3.2" y="4.5" width="9.6" height="3.8" rx="1.2" fill={plugColor} />
+        <rect x="4.3" y="7.8" width="7.4" height="1.4" fill={plugColor} />
+        <path d="M4.9 9h6.2v1.3c0 1.2-1.1 2.2-2.3 2.2H7.2c-1.2 0-2.3-1-2.3-2.2z" fill={plugColor} />
+        <rect x="6.8" y="12.3" width="2.4" height="2.7" rx="0.7" fill={plugColor} />
+      </svg>
+      {withPencil ? (
+        <svg
+          className="absolute -left-[3px] top-[1px] h-[10px] w-[10px] rotate-[35deg]"
+          viewBox="0 0 16 16"
+          aria-hidden="true"
+        >
+          <rect x="2.2" y="5.8" width="8.1" height="4.2" rx="0.6" fill="#6ba6db" />
+          <rect x="9.6" y="5.8" width="2.7" height="4.2" fill="#4f86b8" />
+          <path d="M12.3 5.8 14.6 7.9l-2.3 2.1z" fill="#d7deea" />
+          <path d="M13.2 7.9 14.6 9.2l-1.1 1z" fill="#23262e" />
+        </svg>
+      ) : null}
+    </span>
+  )
+}
+
 function UndoIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 16 16" aria-hidden="true">
@@ -219,6 +247,192 @@ function RedoIcon() {
     <svg width="18" height="18" viewBox="0 0 16 16" aria-hidden="true">
       <path d="M9.7 5.3h2.8m0 0-1.7-1.7m1.7 1.7L10.8 7" fill="none" stroke="#8f8f8f" strokeWidth="1.35" strokeLinecap="round" strokeLinejoin="round" />
       <path d="M9.8 5.3H7.3C5 5.3 3.5 6.7 3.5 8.8c0 1.7 1.1 3.1 2.9 3.5" fill="none" stroke="#8f8f8f" strokeWidth="1.35" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function ExecuteSquareIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 16 16" aria-hidden="true">
+      <rect x="4.8" y="4.8" width="6.4" height="6.4" fill="#8a8a8a" />
+    </svg>
+  )
+}
+
+function ExecuteCheckIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 16 16" aria-hidden="true">
+      <path d="M3.4 8.2 6.7 11.4 12.8 4.6" fill="none" stroke="#d6d6d6" strokeWidth="2.05" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function ExecuteNodesIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 16 16" aria-hidden="true">
+      <rect x="1.6" y="1.8" width="3.3" height="3.3" fill="none" stroke="#bfbfbf" strokeWidth="1" />
+      <rect x="10.6" y="1.8" width="3.3" height="3.3" fill="none" stroke="#bfbfbf" strokeWidth="1" />
+      <rect x="1.6" y="10.6" width="3.3" height="3.3" fill="none" stroke="#bfbfbf" strokeWidth="1" />
+      <path d="M4.9 3.45h5.7M3.25 5.1v5.5" stroke="#bfbfbf" strokeWidth="0.95" />
+      <path d="M10.6 11.1h3.3l-1.65 2.8z" fill="none" stroke="#bfbfbf" strokeWidth="1" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function BoxStackIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+      <rect x="2.8" y="4.1" width="9.2" height="7.8" fill="none" stroke="#bebebe" strokeWidth="1" />
+      <rect x="4.9" y="6.1" width="9.2" height="7.8" fill="none" stroke="#bebebe" strokeWidth="1" />
+      <path d="M6.1 8.1h6.8M6.1 10h6.8" stroke="#9fa4ac" strokeWidth="0.9" />
+    </svg>
+  )
+}
+
+function ActivePanelIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+      <rect x="2.3" y="2.2" width="13.4" height="13.6" fill="none" stroke="#8f90c8" strokeWidth="1.1" />
+      <rect x="5.2" y="5.1" width="7.6" height="1.1" fill="#bfbfbf" />
+      <rect x="5.2" y="7.5" width="7.6" height="1.1" fill="#bfbfbf" />
+      <rect x="5.2" y="9.9" width="7.6" height="1.1" fill="#bfbfbf" />
+      <rect x="5.2" y="12.3" width="7.6" height="1.1" fill="#bfbfbf" />
+    </svg>
+  )
+}
+
+function EndTableIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+      <rect x="1.8" y="1.8" width="14.4" height="14.4" fill="none" stroke="#8f90c8" strokeWidth="1.05" />
+      <rect x="4.3" y="4.3" width="9.4" height="9.4" fill="none" stroke="#bfc3ca" strokeWidth="0.95" />
+      <path d="M4.3 7.4h9.4M4.3 10.6h9.4M7.4 4.3v9.4M10.6 4.3v9.4" stroke="#bfc3ca" strokeWidth="0.85" />
+    </svg>
+  )
+}
+
+function EndSmallSquaresIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+      <rect x="3.1" y="4.2" width="4.3" height="4.3" fill="none" stroke="#bfc3ca" strokeWidth="1" />
+      <rect x="10.4" y="4.2" width="4.3" height="4.3" fill="none" stroke="#bfc3ca" strokeWidth="1" />
+      <rect x="3.1" y="10.4" width="4.3" height="4.3" fill="none" stroke="#bfc3ca" strokeWidth="1" />
+      <path d="M7.4 6.3h3M5.2 8.5v1.9M7.4 12.5h3" stroke="#9ea3ab" strokeWidth="0.9" />
+    </svg>
+  )
+}
+
+function EndDocIcon() {
+  return (
+    <svg width="17" height="17" viewBox="0 0 18 18" aria-hidden="true">
+      <path d="M2.9 2.2h8.5l3 2.8v10.3H2.9z" fill="none" stroke="#c2c6cd" strokeWidth="1.1" />
+      <path d="M11.4 2.2V5h3" fill="none" stroke="#c2c6cd" strokeWidth="1.1" />
+      <path d="M5.1 8.2h5.6M5.1 10.4h5.6" stroke="#c2c6cd" strokeWidth="0.95" />
+      <path d="m10.4 12.6 2.2 2.1M12.6 14.7h-2.1v-2.1" fill="none" stroke="#c2c6cd" strokeWidth="0.95" />
+    </svg>
+  )
+}
+
+function ServerFrameIcon() {
+  return (
+    <img src="/toolbar-icons/server-frame-fixed.png" alt="" className="h-[18px] w-[18px] object-contain opacity-100" draggable={false} />
+  )
+}
+
+function EndGreenLinesIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+      <path d="M3 5.1h7.3M3 8.6h7.3M3 12.1h7.3" stroke="#76c98b" strokeWidth="1.1" />
+      <path d="m12.1 6.1 2 2-2 2" fill="none" stroke="#76c98b" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function EndBlueTuneIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+      <path d="M3 5.1h12M3 12.9h12" stroke="#6fa2dd" strokeWidth="1" />
+      <circle cx="6.2" cy="5.1" r="1.8" fill="none" stroke="#6fa2dd" strokeWidth="1" />
+      <circle cx="11.8" cy="12.9" r="1.8" fill="none" stroke="#6fa2dd" strokeWidth="1" />
+    </svg>
+  )
+}
+
+function EndBlueGearIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+      <circle cx="9" cy="9" r="3.1" fill="none" stroke="#6fa2dd" strokeWidth="1" />
+      <path d="M9 3.9v1.3M9 12.8v1.3M3.9 9h1.3M12.8 9h1.3" stroke="#6fa2dd" strokeWidth="1" />
+      <path d="m4.2 4.5 1 .9M12.8 12.6l1 .9M13.7 4.5l-1 .9M5.2 12.6l-1 .9" stroke="#6fa2dd" strokeWidth="1" />
+    </svg>
+  )
+}
+
+function BlueListArrowIcon() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 18 18" aria-hidden="true">
+      <path d="M2.5 4.1h3.2M2.5 8.0h3.2M2.5 11.9h3.2" stroke="#efefef" strokeWidth="1.1" />
+      <path d="M6.8 4.1h8.7M6.8 8.0h8.7M6.8 11.9h8.7" stroke="#efefef" strokeWidth="1.1" />
+      <path d="M6.8 6.0h8.7M6.8 9.9h8.7" stroke="#66ca6f" strokeWidth="1.3" />
+    </svg>
+  )
+}
+
+function BlueSliderIcon() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 18 18" aria-hidden="true">
+      <path d="M2.7 4.1h3.1M2.7 8h3.1M2.7 11.9h3.1" stroke="#efefef" strokeWidth="1.1" />
+      <path d="M7 4.1h8.4M7 8h8.4M7 11.9h8.4" stroke="#efefef" strokeWidth="1.1" />
+      <path d="M6.2 7.9c0-2.3 1.9-4.2 4.2-4.2s4.2 1.9 4.2 4.2c0 1.7-1 3.1-2.5 3.8" fill="none" stroke="#4fa6ff" strokeWidth="1.25" />
+      <path d="m10.8 11.9 1.9-.1-1.1 1.5" fill="none" stroke="#4fa6ff" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function BlueSwapIcon() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 18 18" aria-hidden="true">
+      <path d="M2.4 4.2h4.2M2.4 8h4.2M2.4 11.8h4.2" stroke="#efefef" strokeWidth="1.1" />
+      <path d="M11.2 4.2h4.3M11.2 8h4.3M11.2 11.8h4.3" stroke="#efefef" strokeWidth="1.1" />
+      <path d="M7.2 8h6.5" stroke="#4fa6ff" strokeWidth="1.3" />
+      <path d="m7.2 8 2.1-1.8v3.6z" fill="#4fa6ff" />
+    </svg>
+  )
+}
+
+function BlueTuneRightIcon() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 18 18" aria-hidden="true">
+      <path d="M2.4 4.2h4.2M2.4 8h4.2M2.4 11.8h4.2" stroke="#efefef" strokeWidth="1.1" />
+      <path d="M11.2 4.2h4.3M11.2 8h4.3M11.2 11.8h4.3" stroke="#efefef" strokeWidth="1.1" />
+      <path d="M6.9 8h6.5" stroke="#4fa6ff" strokeWidth="1.3" />
+      <path d="m13.4 8-2.1-1.8v3.6z" fill="#4fa6ff" />
+    </svg>
+  )
+}
+
+function QueryOptionsIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 18 18" aria-hidden="true">
+      <rect x="1.8" y="2.0" width="3.6" height="3.6" fill="none" stroke="#c4c4c4" strokeWidth="1.1" />
+      <rect x="12.6" y="2.0" width="3.6" height="3.6" fill="none" stroke="#c4c4c4" strokeWidth="1.1" />
+      <rect x="1.8" y="12.4" width="3.6" height="3.6" fill="none" stroke="#c4c4c4" strokeWidth="1.1" />
+      <rect x="12.6" y="12.4" width="3.6" height="3.6" fill="none" stroke="#c4c4c4" strokeWidth="1.1" />
+      <path d="M5.4 3.8h7.2M3.6 5.6v6.8" stroke="#c4c4c4" strokeWidth="1.05" />
+    </svg>
+  )
+}
+
+function IntelliSenseEnabledIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 18 18" aria-hidden="true">
+      <rect x="1.8" y="2.0" width="3.6" height="3.6" fill="none" stroke="#c4c4c4" strokeWidth="1.1" />
+      <rect x="12.6" y="2.0" width="3.6" height="3.6" fill="none" stroke="#c4c4c4" strokeWidth="1.1" />
+      <rect x="1.8" y="12.4" width="3.6" height="3.6" fill="none" stroke="#c4c4c4" strokeWidth="1.1" />
+      <rect x="12.6" y="12.4" width="3.6" height="3.6" fill="none" stroke="#c4c4c4" strokeWidth="1.1" opacity="0" />
+      <path d="M5.4 3.8h7.2M3.6 5.6v6.8" stroke="#c4c4c4" strokeWidth="1.05" />
+      <circle cx="14.0" cy="13.8" r="3.6" fill="#3fbf66" />
+      <path d="m12.4 13.8 1.1 1.2 2.3-2.4" fill="none" stroke="#ffffff" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
 }
@@ -249,9 +463,9 @@ function ToolbarRowOne({ onNewQuery }: { onNewQuery: () => void }) {
       </button>
       <div className="mx-1 h-[20px] w-px bg-[#4a4a4a]" />
 
-      <div className="mx-[1px] flex items-center gap-[6px]">
-        <div className="flex h-[22px] items-center gap-[2px] hover:bg-[rgba(62,62,64,1)]">
-          <button className="flex h-[22px] w-[22px] cursor-default items-center justify-center">
+      <div className="mx-[1px] flex items-center gap-[2px]">
+        <div className="flex h-[22px] w-[34px] items-center justify-between px-[1px] hover:bg-[rgba(62,62,64,1)]">
+          <button className="flex h-[22px] w-[20px] cursor-default items-center justify-center">
             <img
               src="/toolbar-icons/new-query-icon.png"
               alt=""
@@ -259,15 +473,15 @@ function ToolbarRowOne({ onNewQuery }: { onNewQuery: () => void }) {
               draggable={false}
             />
           </button>
-          <button className="flex h-[22px] w-[12px] cursor-default items-center justify-center">
+          <button className="flex h-[22px] w-[10px] cursor-default items-center justify-center">
             <TinyDownArrow />
           </button>
         </div>
-        <button className="flex h-[22px] w-[40px] cursor-default items-center justify-center hover:bg-[rgba(62,62,64,1)]">
+        <button className="flex h-[22px] w-[34px] cursor-default items-center justify-center hover:bg-[rgba(62,62,64,1)]">
           <img
             src="/toolbar-icons/newfile-disabled-combo.png"
             alt=""
-            className="h-[16px] w-[40px] object-contain"
+            className="h-[16px] w-[34px] object-contain"
             draggable={false}
           />
         </button>
@@ -392,57 +606,64 @@ function ToolbarRowTwo({
   return (
     <div className="flex h-[32px] items-center bg-[#2d2d30] pl-0 pr-1">
       <RowGrip />
-      <IconButton><Glyph color="#7f7f7f" /></IconButton>
-      <IconButton><Glyph color="#7f7f7f" /></IconButton>
-      <Divider />
+      <button className="flex h-[22px] w-[22px] cursor-default items-center justify-center hover:bg-[rgba(62,62,64,1)]">
+        <PlugIcon />
+      </button>
+      <button className="flex h-[22px] w-[22px] cursor-default items-center justify-center hover:bg-[rgba(62,62,64,1)]">
+        <PlugIcon withPencil />
+      </button>
+      <div className="mx-1 h-[18px] w-px bg-[#4a4a4a]" />
 
-      <select
-        value={currentDatabase}
-        onChange={(e) => onDatabaseChange(e.target.value)}
-        className="h-[25px] min-w-[290px] cursor-default border border-[#4a4a50] bg-[#222226] px-2 text-[12px] text-[#e2e2e2] outline-none"
-      >
-        <option>Portfolio</option>
-        <option>MyDatabase</option>
-        <option>DataWarehouse</option>
-        <option>master</option>
-      </select>
+      <div className="relative">
+        <select
+          value={currentDatabase}
+          onChange={(e) => onDatabaseChange(e.target.value)}
+          className="h-[24px] min-w-[168px] cursor-default appearance-none border border-[#3c3c3f] bg-[#333337] pl-2 pr-6 text-[12px] text-[#afb6b9] outline-none transition-colors hover:border-[#8f93c8] hover:shadow-[inset_0_0_0_1px_rgba(143,147,200,0.35)] focus:border-[#8f93c8] focus:shadow-[inset_0_0_0_1px_rgba(143,147,200,0.35)]"
+        >
+          <option>Portfolio</option>
+          <option>MyDatabase</option>
+          <option>DataWarehouse</option>
+          <option>master</option>
+        </select>
+        <span className="pointer-events-none absolute right-[6px] top-1/2 -translate-y-1/2 text-[11px] text-[#afb6b9]">▾</span>
+      </div>
 
-      <Divider />
+      <div className="mx-1 h-[18px] w-px bg-[#4a4a4a]" />
 
       <button
         onClick={onExecute}
         disabled={isExecuting}
-        className={`flex h-[22px] cursor-default items-center gap-1 px-2 text-[12px] text-[#ececec] hover:bg-[#3a3a40] ${
+        className={`flex h-[22px] cursor-default items-center gap-1.5 pl-[2px] pr-[4px] text-[12px] text-[#d9d9d9] hover:bg-[rgba(62,62,64,1)] ${
           isExecuting ? "opacity-60" : ""
         }`}
       >
         <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
-          <path d="M4.2 2.8v10.5L13 8z" fill="#37c96d" />
+          <path d="M4.3 2.8v10.4L12.8 8z" fill="#3fcf73" />
         </svg>
         <span>Execute</span>
       </button>
 
-      <Divider />
-      <IconButton><Glyph color="#d6d6d6" /></IconButton>
-      <IconButton><Glyph color="#d6d6d6" /></IconButton>
-      <IconButton><Glyph color="#d6d6d6" /></IconButton>
-      <Divider />
-      <IconButton><Glyph color="#d6d6d6" /></IconButton>
-      <IconButton><Glyph color="#7ac983" /></IconButton>
-      <IconButton><Glyph color="#d6d6d6" /></IconButton>
-      <Divider />
-      <IconButton><Glyph color="#d6d6d6" /></IconButton>
-      <IconButton><Glyph color="#d6d6d6" /></IconButton>
-      <IconButton><Glyph color="#d6d6d6" /></IconButton>
-      <IconButton><Glyph color="#d6d6d6" /></IconButton>
-      <Divider />
-      <IconButton><Glyph color="#7ac983" /></IconButton>
-      <IconButton><Glyph color="#6fa2dd" /></IconButton>
-      <IconButton><Glyph color="#6fa2dd" /></IconButton>
-      <Divider />
-      <IconButton><Glyph color="#6fa2dd" /></IconButton>
-      <IconButton><Glyph color="#6fa2dd" /></IconButton>
-      <IconButton><Glyph color="#bfbfbf" /></IconButton>
+      <div className="mx-1 h-[18px] w-px bg-[#4a4a4a]" />
+      <div className="ml-[-2px] flex items-center">
+        <button className="flex h-[22px] w-[22px] cursor-default items-center justify-center hover:bg-[rgba(62,62,64,1)]"><ExecuteSquareIcon /></button>
+        <button className="flex h-[22px] w-[22px] cursor-default items-center justify-center hover:bg-[rgba(62,62,64,1)]"><ExecuteCheckIcon /></button>
+        <button className="flex h-[22px] w-[22px] cursor-default items-center justify-center hover:bg-[rgba(62,62,64,1)]"><ExecuteNodesIcon /></button>
+        <button className="flex h-[22px] w-[24px] cursor-default items-center justify-center hover:bg-[rgba(62,62,64,1)]"><BoxStackIcon /></button>
+        <button className="flex h-[22px] w-[24px] cursor-default items-center justify-center hover:bg-[rgba(62,62,64,1)]"><ActivePanelIcon /></button>
+        <div className="mx-1 h-[18px] w-px bg-[#4a4a4a]" />
+        <button className="flex h-[22px] w-[20px] cursor-default items-center justify-center hover:bg-[rgba(62,62,64,1)]"><QueryOptionsIcon /></button>
+        <button className="flex h-[22px] w-[20px] cursor-default items-center justify-center hover:bg-[rgba(62,62,64,1)]"><IntelliSenseEnabledIcon /></button>
+        <button className="flex h-[22px] w-[20px] cursor-default items-center justify-center hover:bg-[rgba(62,62,64,1)]"><ServerFrameIcon /></button>
+      </div>
+      <div className="mx-1 h-[18px] w-px bg-[#4a4a4a]" />
+      <IconButton><EndSmallSquaresIcon /></IconButton>
+      <IconButton><EndTableIcon /></IconButton>
+      <IconButton><EndDocIcon /></IconButton>
+      <div className="mx-1 h-[18px] w-px bg-[#4a4a4a]" />
+      <button className="flex h-[26px] w-[26px] translate-y-[1px] cursor-default items-center justify-center hover:bg-[rgba(62,62,64,1)]"><BlueListArrowIcon /></button>
+      <button className="flex h-[26px] w-[26px] translate-y-[1px] cursor-default items-center justify-center hover:bg-[rgba(62,62,64,1)]"><BlueSliderIcon /></button>
+      <button className="flex h-[26px] w-[26px] translate-y-[1px] cursor-default items-center justify-center hover:bg-[rgba(62,62,64,1)]"><BlueSwapIcon /></button>
+      <button className="flex h-[26px] w-[26px] translate-y-[1px] cursor-default items-center justify-center hover:bg-[rgba(62,62,64,1)]"><BlueTuneRightIcon /></button>
     </div>
   )
 }
