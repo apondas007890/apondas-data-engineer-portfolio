@@ -12,16 +12,13 @@ interface StatusBarProps {
   cursor: CursorPosition
 }
 
-const ZOOM_LEVELS = [20, 50, 70, 100, 113, 150, 200, 400]
+const ZOOM_LEVELS = [20, 50, 70, 100, 125, 150, 175, 200, 400]
 
 export function StatusBar({ rowCount, currentDatabase, zoom, onZoomChange, cursor }: StatusBarProps) {
   const { theme } = useTheme()
   const isDark = theme === "dark"
   const [showZoomMenu, setShowZoomMenu] = useState(false)
   const zoomMenuRef = useRef<HTMLDivElement>(null)
-
-  // hsl(240, 25%, 42%) = #505080 (purple-ish blue)
-  const readyBarColor = "hsl(240, 25%, 42%)"
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -37,7 +34,7 @@ export function StatusBar({ rowCount, currentDatabase, zoom, onZoomChange, curso
     <div className="flex w-full flex-col">
       {/* Connection Status Bar - Khaki yellow - FULL WIDTH outside Object Explorer */}
       <div
-        className="flex h-[18px] min-w-0 items-center justify-between bg-[#f0e68c] px-2 text-[11px] text-[#1e1e1e]"
+        className="sql-yellow-status flex h-[20px] min-w-0 items-center justify-between bg-[#f0e68c] px-2 text-[11px] text-[#1e1e1e]"
       >
         <div className="flex min-w-0 items-center gap-2">
           <div className="relative flex items-center" ref={zoomMenuRef}>
@@ -104,24 +101,6 @@ export function StatusBar({ rowCount, currentDatabase, zoom, onZoomChange, curso
         </div>
       </div>
 
-      {/* Ready Bar - Purple/Blue hsl(240, 25%, 42%) */}
-      <div
-        className="flex h-[20px] min-w-0 items-center justify-between px-2 text-[11px] text-white"
-        style={{ backgroundColor: readyBarColor }}
-      >
-        <div className="flex items-center gap-2">
-          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1">
-            <rect x="2" y="2" width="12" height="12" rx="1" />
-          </svg>
-          <span>Ready</span>
-        </div>
-        <div className="flex items-center gap-6">
-          <span>{`Ln ${cursor.line}`}</span>
-          <span>{`Col ${cursor.col}`}</span>
-          <span>{`Ch ${cursor.ch}`}</span>
-          <span>INS</span>
-        </div>
-      </div>
     </div>
   )
 }

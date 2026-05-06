@@ -60,7 +60,7 @@ export default function SQLIDEPage() {
   const [sidebarWidth, setSidebarWidth] = useState(280)
   const [selectedNode, setSelectedNode] = useState<string | null>("server")
   const [rowCount, setRowCount] = useState(0)
-  const [editorZoom, setEditorZoom] = useState(113)
+  const [editorZoom, setEditorZoom] = useState(125)
   const [cursor, setCursor] = useState<CursorPosition>({ line: 1, col: 1, ch: 1 })
   const [currentDatabase, setCurrentDatabase] = useState("Portfolio")
 
@@ -165,38 +165,41 @@ export default function SQLIDEPage() {
           currentDatabase={currentDatabase}
           onDatabaseChange={setCurrentDatabase}
         />
-        <div className="flex flex-1 overflow-hidden">
+        <div className="main-content flex flex-1 min-h-0 overflow-hidden">
           <Sidebar
             width={sidebarWidth}
             onWidthChange={setSidebarWidth}
             selectedNode={selectedNode}
             onSelectNode={handleSidebarSelect}
           />
-          <div 
-            className="flex min-w-0 flex-1 flex-col overflow-hidden"
+          <div className={`vertical-splitter w-[10px] shrink-0 ${isDark ? "bg-[#2d2d30]" : "bg-[#e6e6e6]"} relative`} />
+          <div
+            className="sql-editor-area flex min-w-0 flex-1 flex-col overflow-hidden"
             onClick={() => setFocusArea("editor")}
           >
-            <EditorTabs
-              tabs={tabs}
-              activeTabId={activeTabId}
-              onTabChange={handleTabChange}
-              onCloseTab={handleCloseTab}
-            />
-            <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-              <Editor
-                content={activeTab?.content || ""}
-                onChange={handleContentChange}
-                zoom={editorZoom}
-                onZoomChange={handleZoomChange}
-                onCursorChange={handleCursorChange}
+            <div className="sql-editor-panel flex min-h-0 flex-1 flex-col overflow-hidden box-border">
+              <EditorTabs
+                tabs={tabs}
+                activeTabId={activeTabId}
+                onTabChange={handleTabChange}
+                onCloseTab={handleCloseTab}
               />
-              {showResults && (
-                <ResultsPanel
-                  data={resultData}
-                  isLoading={isExecuting}
-                  onClose={() => setShowResults(false)}
+              <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+                <Editor
+                  content={activeTab?.content || ""}
+                  onChange={handleContentChange}
+                  zoom={editorZoom}
+                  onZoomChange={handleZoomChange}
+                  onCursorChange={handleCursorChange}
                 />
-              )}
+                {showResults && (
+                  <ResultsPanel
+                    data={resultData}
+                    isLoading={isExecuting}
+                    onClose={() => setShowResults(false)}
+                  />
+                )}
+              </div>
             </div>
             <StatusBar
               rowCount={rowCount}
@@ -205,6 +208,23 @@ export default function SQLIDEPage() {
               onZoomChange={handleZoomChange}
               cursor={cursor}
             />
+          </div>
+        </div>
+
+        <div className={`status-gap h-[6px] shrink-0 ${isDark ? "bg-[#2d2d30]" : "bg-[#f3f3f3]"}`} />
+
+        <div className={`global-status-bar flex h-[24px] shrink-0 items-center justify-between px-2 text-[11px] ${isDark ? "bg-[#5b5794] text-white" : "bg-[#d8d8ea] text-[#1e1e1e]"}`}>
+          <div className="flex items-center gap-2">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1">
+              <rect x="2" y="2" width="12" height="12" rx="1" />
+            </svg>
+            <span>Ready</span>
+          </div>
+          <div className="flex items-center gap-6">
+            <span>{`Ln ${cursor.line}`}</span>
+            <span>{`Col ${cursor.col}`}</span>
+            <span>{`Ch ${cursor.ch}`}</span>
+            <span>INS</span>
           </div>
         </div>
       </div>

@@ -354,6 +354,9 @@ export function Sidebar({ width, onWidthChange, selectedNode, onSelectNode }: Si
   const isFocused = focusArea === "sidebar"
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set(["server", "databases"]))
   const [isResizing, setIsResizing] = useState(false)
+  const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isPinned, setIsPinned] = useState(true)
+  const [isVisible, setIsVisible] = useState(true)
 
   // hsl(240, 25%, 42%) for focused sidebar header
   const focusedColor = "hsl(240, 25%, 42%)"
@@ -452,70 +455,160 @@ export function Sidebar({ width, onWidthChange, selectedNode, onSelectNode }: Si
 
   return (
     <div
-      className={`relative flex flex-col ${isDark ? "border-r border-[#3c3c3c] bg-[#252526]" : "border-r border-[#cccccc] bg-[#f3f3f3]"}`}
-      style={{ width: `${width}px` }}
+      className={`object-explorer-wrapper relative flex flex-col ${isDark ? "bg-[#2d2d30]" : "bg-[#f3f3f3]"}`}
+      style={{ width: isVisible ? `${width}px` : "24px" }}
     >
-      {/* Object Explorer Header */}
-      <div
-        className={`flex h-[22px] items-center justify-between border-b px-2 text-[11px] ${
-          isDark ? "border-[#3c3c3c]" : "border-[#cccccc]"
-        } ${isFocused ? "text-white" : isDark ? "bg-[#2d2d2d] text-[#cccccc]" : "bg-[#eeeef2] text-[#1e1e1e]"}`}
-        style={isFocused ? { backgroundColor: focusedColor } : undefined}
-      >
-        <span>Object Explorer</span>
-        <div className="flex items-center gap-1">
-          <button className="p-0.5 hover:bg-white/20">
-            <svg width="9" height="9" viewBox="0 0 9 9" fill="currentColor">
-              <path d="M1 4h7M4 1v7" stroke="currentColor" strokeWidth="1" />
-            </svg>
-          </button>
-          <XIcon size={12} className="cursor-pointer hover:opacity-70" />
+      {isVisible ? (
+      <div className={`object-explorer-panel ${isDark ? "border-[#3f3f52] bg-[#1e1e1e]" : "border-[#cccccc] bg-white"}`}>
+        {/* Object Explorer Header */}
+        <div
+          className={`object-explorer-header relative flex h-[21px] min-h-[21px] max-h-[21px] items-center justify-between px-2 py-0 ${
+            isDark ? "bg-[#2d2d30] text-[#e2e2e2]" : "bg-[#eeeef2] text-[#1e1e1e]"
+          }`}
+          style={
+            isFocused && isDark
+              ? { backgroundColor: focusedColor }
+              : undefined
+          }
+        >
+          <div className="pointer-events-none absolute left-[102px] right-[48px] top-1/2 z-0 flex h-[7px] -translate-y-1/2 flex-col justify-between">
+            <div className="h-px bg-repeat-x" style={{ backgroundImage: "radial-gradient(circle, #626267 0.75px, transparent 0.95px)", backgroundSize: "6px 1px" }} />
+            <div className="ml-[3px] h-px bg-repeat-x" style={{ backgroundImage: "radial-gradient(circle, #626267 0.75px, transparent 0.95px)", backgroundSize: "6px 1px" }} />
+            <div className="h-px bg-repeat-x" style={{ backgroundImage: "radial-gradient(circle, #626267 0.75px, transparent 0.95px)", backgroundSize: "6px 1px" }} />
+          </div>
+          <span className={`relative z-10 pr-2 ${isDark ? "bg-[#2d2d30] text-[#e2e2e2]" : "bg-[#eeeef2] text-[#1e1e1e]"}`}>
+            Object Explorer
+          </span>
+          <div className={`relative z-10 flex items-center gap-1 pl-2 ${isDark ? "bg-[#2d2d30]" : "bg-[#eeeef2]"}`}>
+            <button
+              type="button"
+              aria-label={isCollapsed ? "Expand Object Explorer" : "Collapse Object Explorer"}
+              onClick={() => setIsCollapsed((prev) => !prev)}
+              className={`${isDark ? "hover:bg-white/10" : "hover:bg-white/20"} p-0.5 ${isPinned ? "text-[#f0f0f0]" : "text-[#8e8e93]"}`}
+            >
+              <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor" aria-hidden="true">
+                <path d={isCollapsed ? "M2 1l4 3-4 3z" : "M1 2.5h6L4 6z"} />
+              </svg>
+            </button>
+            <button
+              type="button"
+              aria-label={isPinned ? "Unpin Object Explorer" : "Pin Object Explorer"}
+              onClick={() => setIsPinned((prev) => !prev)}
+              className={`${isDark ? "text-[#d0d0d0] hover:bg-white/10" : "hover:bg-white/20"} p-0.5`}
+            >
+              <svg width="9" height="9" viewBox="0 0 9 9" fill="none" aria-hidden="true">
+                <path
+                  d="M2 2.2h5M4.5 2.2v3.6M3.1 4.1h2.8M4.5 5.8v1.7"
+                  stroke="currentColor"
+                  strokeWidth="1"
+                  strokeLinecap="square"
+                />
+              </svg>
+            </button>
+            <button
+              type="button"
+              aria-label="Close Object Explorer"
+              onClick={() => setIsVisible(false)}
+              className={`${isDark ? "text-[#d0d0d0] hover:bg-white/10" : "hover:bg-white/20"} p-0.5`}
+            >
+              <XIcon size={11} className={isDark ? "text-[#d0d0d0]" : ""} />
+            </button>
+          </div>
         </div>
-      </div>
 
-      {/* Toolbar */}
-      <div
-        className={`flex h-[20px] items-center gap-1 border-b px-1 ${
-          isDark ? "border-[#3c3c3c] bg-[#2d2d2d]" : "border-[#cccccc] bg-[#eeeef2]"
-        }`}
-      >
-        <span className={`text-[10px] ${isDark ? "text-[#cccccc]" : "text-[#666666]"}`}>Connect</span>
-        <span className={`text-[10px] ${isDark ? "text-[#666666]" : "text-[#999999]"}`}>▾</span>
-        <div className="mx-1 h-3 w-px bg-[#3c3c3c]" />
-        {/* Toolbar icons */}
-        <button className={`p-0.5 ${isDark ? "hover:bg-[#3c3c3c]" : "hover:bg-[#d4d4d4]"}`}>
-          <svg width="12" height="12" viewBox="0 0 16 16"><rect x="3" y="3" width="10" height="10" rx="1" fill={isDark ? "#414141" : "#f0eff1"} stroke={isDark ? "#f0eff1" : "#414141"} strokeWidth="0.5" /></svg>
-        </button>
-        <button className={`p-0.5 ${isDark ? "hover:bg-[#3c3c3c]" : "hover:bg-[#d4d4d4]"}`}>
-          <svg width="12" height="12" viewBox="0 0 16 16"><rect x="2" y="5" width="12" height="2" fill="#c9a227" /><rect x="7" y="2" width="2" height="12" fill="#c9a227" /></svg>
-        </button>
-        <div className="mx-1 h-3 w-px bg-[#3c3c3c]" />
-        <button className={`p-0.5 ${isDark ? "hover:bg-[#3c3c3c]" : "hover:bg-[#d4d4d4]"}`}>
-          <svg width="12" height="12" viewBox="0 0 16 16"><path d="M2 4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4z" fill="none" stroke="#22c55e" strokeWidth="1.5" /><path d="M5 8l2 2 4-4" stroke="#22c55e" strokeWidth="1.5" fill="none" /></svg>
-        </button>
-        <button className={`p-0.5 ${isDark ? "hover:bg-[#3c3c3c]" : "hover:bg-[#d4d4d4]"}`}>
-          <svg width="12" height="12" viewBox="0 0 16 16"><path d="M3 3l10 10M13 3L3 13" stroke="#ef4444" strokeWidth="1.5" /></svg>
-        </button>
-      </div>
+        {/* Toolbar */}
+        {!isCollapsed && (
+        <div
+          className={`object-explorer-toolbar flex h-[21px] min-h-[21px] max-h-[21px] items-center px-[6px] py-0 ${
+            isDark ? "bg-[#2d2d30]" : "bg-[#eeeef2]"
+          }`}
+          style={{ boxShadow: isDark ? "inset 0 -1px #3a3a3a" : "inset 0 -1px #cccccc" }}
+        >
+          <span className={`text-[12px] ${isDark ? "text-[#cccccc]" : "text-[#666666]"}`}>Connect</span>
+          <span className={`text-[10px] ${isDark ? "text-[#666666]" : "text-[#999999]"}`}>▾</span>
+          <div className="mx-1 h-3 w-px bg-[#3c3c3c]" />
+          {/* Toolbar icons */}
+          <button className={`p-0.5 ${isDark ? "hover:bg-[#3c3c3c]" : "hover:bg-[#d4d4d4]"}`}>
+            <svg width="12" height="12" viewBox="0 0 16 16"><rect x="3" y="3" width="10" height="10" rx="1" fill={isDark ? "#414141" : "#f0eff1"} stroke={isDark ? "#f0eff1" : "#414141"} strokeWidth="0.5" /></svg>
+          </button>
+          <button className={`p-0.5 ${isDark ? "hover:bg-[#3c3c3c]" : "hover:bg-[#d4d4d4]"}`}>
+            <svg width="12" height="12" viewBox="0 0 16 16"><rect x="2" y="5" width="12" height="2" fill="#c9a227" /><rect x="7" y="2" width="2" height="12" fill="#c9a227" /></svg>
+          </button>
+          <div className="mx-1 h-3 w-px bg-[#3c3c3c]" />
+          <button className={`p-0.5 ${isDark ? "hover:bg-[#3c3c3c]" : "hover:bg-[#d4d4d4]"}`}>
+            <svg width="12" height="12" viewBox="0 0 16 16"><path d="M2 4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4z" fill="none" stroke="#22c55e" strokeWidth="1.5" /><path d="M5 8l2 2 4-4" stroke="#22c55e" strokeWidth="1.5" fill="none" /></svg>
+          </button>
+          <button className={`p-0.5 ${isDark ? "hover:bg-[#3c3c3c]" : "hover:bg-[#d4d4d4]"}`}>
+            <svg width="12" height="12" viewBox="0 0 16 16"><path d="M3 3l10 10M13 3L3 13" stroke="#ef4444" strokeWidth="1.5" /></svg>
+          </button>
+        </div>
+        )}
 
-      {/* Tree View - with custom scrollbar */}
-      <div
-        className={`flex-1 overflow-auto py-1 ${isDark ? "ssms-scrollbar-dark" : "ssms-scrollbar-light"}`}
-        style={{
-          scrollbarWidth: "thin",
-          scrollbarColor: isDark ? "#4a4a4a #252526" : "#c0c0c0 #f3f3f3",
-        }}
-      >
-        {renderTree(treeData)}
+        {/* Tree View - with custom scrollbar */}
+        {!isCollapsed && (
+        <div
+          className={`object-explorer-tree flex-1 overflow-auto ${isDark ? "ssms-scrollbar-dark bg-[#1e1e1e]" : "ssms-scrollbar-light bg-white"}`}
+          style={{
+            scrollbarWidth: "thin",
+            scrollbarColor: isDark ? "#4a4a4a #252526" : "#c0c0c0 #f3f3f3",
+          }}
+        >
+          {renderTree(treeData)}
+        </div>
+        )}
+
       </div>
+      ) : (
+      <button
+        type="button"
+        aria-label="Show Object Explorer"
+        onClick={() => setIsVisible(true)}
+        className={`ml-[6px] mt-1 flex h-6 w-4 items-center justify-center ${isDark ? "bg-[#2d2d30] text-[#d0d0d0] hover:bg-[#3a3a3a]" : "bg-[#eeeef2] text-[#666666] hover:bg-[#dddddd]"}`}
+      >
+        <ChevronRightIcon size={12} />
+      </button>
+      )}
 
       {/* Resize Handle */}
+      {isVisible && (
       <div
         className={`absolute right-0 top-0 h-full w-1 cursor-ew-resize ${isResizing ? "bg-[#007acc]" : "hover:bg-[#007acc]"}`}
         onMouseDown={handleMouseDown}
       />
+      )}
 
       <style jsx global>{`
+        .object-explorer-wrapper {
+          background: #2d2d30;
+          padding: 0 0 0 6px;
+          height: 100%;
+          box-sizing: border-box;
+        }
+        .object-explorer-panel {
+          border: 1px solid #3f3f52;
+          background: #1e1e1e;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+        }
+        .object-explorer-header {
+          height: 21px;
+          min-height: 21px;
+          max-height: 21px;
+          font-size: 12px;
+          line-height: 21px;
+        }
+        .object-explorer-toolbar {
+          height: 21px;
+          min-height: 21px;
+          max-height: 21px;
+          gap: 6px;
+          line-height: 21px;
+        }
+        .object-explorer-tree {
+          padding: 4px 6px;
+        }
         .ssms-scrollbar-dark::-webkit-scrollbar {
           width: 8px;
           height: 8px;

@@ -23,9 +23,10 @@ export function EditorTabs({ tabs, activeTabId, onTabChange, onCloseTab }: Edito
 
   return (
     <div
-      className={`flex h-[24px] min-w-0 items-center ${
-        isDark ? "border-b border-[#3c3c3c] bg-[#2d2d2d]" : "border-b border-[#cccccc] bg-[#eeeef2]"
+      className={`flex h-[21px] min-h-[21px] max-h-[21px] min-w-0 items-center ${
+        isDark ? "bg-[#2d2d30]" : "bg-[#eeeef2]"
       }`}
+      style={{ height: "21px", minHeight: "21px", maxHeight: "21px", lineHeight: "21px", boxSizing: "border-box" }}
     >
       <div className="ssms-tab-scroll flex min-w-0 flex-1 overflow-x-auto overflow-y-hidden">
         {tabs.map((tab) => {
@@ -39,21 +40,40 @@ export function EditorTabs({ tabs, activeTabId, onTabChange, onCloseTab }: Edito
           return (
             <div
               key={tab.id}
-              className={`group flex h-full shrink-0 cursor-pointer items-center gap-1 border-r px-2 ${
-                isDark ? "border-r-[#3c3c3c]" : "border-r-[#cccccc]"
+              className={`group flex h-[21px] min-h-[21px] max-h-[21px] shrink-0 cursor-pointer items-center gap-1 px-2 ${
+                isDark ? "" : ""
               } ${
                 isActive
-                  ? "text-white"
+                  ? isDark
+                    ? "text-[#e5e5e5]"
+                    : "text-white"
                   : isDark
                     ? "bg-[#2d2d2d] text-[#cccccc] hover:bg-[#2a2d2e]"
                     : "bg-[#eeeef2] text-[#1e1e1e] hover:bg-[#e5e5e5]"
               }`}
-              style={bgStyle}
+              style={{
+                ...bgStyle,
+                height: "21px",
+                minHeight: "21px",
+                maxHeight: "21px",
+                lineHeight: "21px",
+                boxSizing: "border-box",
+              }}
               onClick={() => onTabChange(tab.id)}
             >
-              <span className="text-[11px]">{tab.name}</span>
-              <span className={`text-[10px] ${isActive ? "text-white/70" : (isDark ? "text-[#888888]" : "text-[#666666]")}`}>
-                - A...o (APON\ASUS (81))
+              <span
+                className={`${
+                  isActive
+                    ? isDark
+                      ? "text-[#e5e5e5]"
+                      : "text-white"
+                    : isDark
+                      ? "text-[#e5e5e5]"
+                      : "text-[#1e1e1e]"
+                }`}
+                style={{ fontSize: "11px" }}
+              >
+                {tab.name} - A...o (APON\ASUS (81))
               </span>
               <button
                 onClick={(e) => {
