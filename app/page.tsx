@@ -50,7 +50,7 @@ export default function SQLIDEPage() {
     {
       id: "1",
       name: "SQLQuery2.sql",
-      content: "SELECT * FROM Users WHERE active = 1;",
+      content: "",
     },
   ])
   const [activeTabId, setActiveTabId] = useState("1")
@@ -107,11 +107,146 @@ export default function SQLIDEPage() {
     setShowResults(true)
     setTimeout(() => {
       const results = [
-        { id: 1, username: "john_doe", email: "john@example.com", active: 1, created_at: "2024-01-15" },
-        { id: 2, username: "jane_smith", email: "jane@example.com", active: 1, created_at: "2024-02-20" },
-        { id: 3, username: "bob_wilson", email: "bob@example.com", active: 1, created_at: "2024-03-10" },
-        { id: 4, username: "alice_brown", email: "alice@example.com", active: 1, created_at: "2024-04-05" },
-        { id: 5, username: "charlie_davis", email: "charlie@example.com", active: 1, created_at: "2024-05-12" },
+        {
+          OrderID: 1,
+          ProductID: 101,
+          CustomerID: 2,
+          SalesPersonID: 3,
+          OrderDate: "2025-01-01",
+          ShipDate: "2025-01-05",
+          OrderStatus: "Delivered",
+          ShipAddress: "9833 Mt. Dias Blv.",
+          BillAddress: "1226 Shoe St.",
+          Quantity: 1,
+          Sales: 10,
+          CreationTime: "2025-01-01 12:34:56.0000000",
+        },
+        {
+          OrderID: 2,
+          ProductID: 102,
+          CustomerID: 3,
+          SalesPersonID: 3,
+          OrderDate: "2025-01-05",
+          ShipDate: "2025-01-10",
+          OrderStatus: "Shipped",
+          ShipAddress: "250 Race Court",
+          BillAddress: "NULL",
+          Quantity: 1,
+          Sales: 15,
+          CreationTime: "2025-01-05 23:22:04.0000000",
+        },
+        {
+          OrderID: 3,
+          ProductID: 101,
+          CustomerID: 1,
+          SalesPersonID: 5,
+          OrderDate: "2025-01-10",
+          ShipDate: "2025-01-25",
+          OrderStatus: "Delivered",
+          ShipAddress: "8157 W. Book",
+          BillAddress: "8157 W. Book",
+          Quantity: 2,
+          Sales: 20,
+          CreationTime: "2025-01-10 18:24:08.0000000",
+        },
+        {
+          OrderID: 4,
+          ProductID: 105,
+          CustomerID: 1,
+          SalesPersonID: 3,
+          OrderDate: "2025-01-20",
+          ShipDate: "2025-01-25",
+          OrderStatus: "Shipped",
+          ShipAddress: "5724 Victory Lane",
+          BillAddress: "",
+          Quantity: 2,
+          Sales: 60,
+          CreationTime: "2025-01-20 05:50:33.0000000",
+        },
+        {
+          OrderID: 5,
+          ProductID: 104,
+          CustomerID: 2,
+          SalesPersonID: 5,
+          OrderDate: "2025-02-01",
+          ShipDate: "2025-02-05",
+          OrderStatus: "Delivered",
+          ShipAddress: "NULL",
+          BillAddress: "NULL",
+          Quantity: 1,
+          Sales: 25,
+          CreationTime: "2025-02-01 14:02:41.0000000",
+        },
+        {
+          OrderID: 6,
+          ProductID: 104,
+          CustomerID: 3,
+          SalesPersonID: 5,
+          OrderDate: "2025-02-05",
+          ShipDate: "2025-02-10",
+          OrderStatus: "Delivered",
+          ShipAddress: "1792 Belmont Rd.",
+          BillAddress: "NULL",
+          Quantity: 2,
+          Sales: 50,
+          CreationTime: "2025-02-06 15:34:57.0000000",
+        },
+        {
+          OrderID: 7,
+          ProductID: 102,
+          CustomerID: 1,
+          SalesPersonID: 1,
+          OrderDate: "2025-02-15",
+          ShipDate: "2025-02-27",
+          OrderStatus: "Delivered",
+          ShipAddress: "136 Balboa Court",
+          BillAddress: "",
+          Quantity: 2,
+          Sales: 30,
+          CreationTime: "2025-02-16 06:22:01.0000000",
+        },
+        {
+          OrderID: 8,
+          ProductID: 101,
+          CustomerID: 4,
+          SalesPersonID: 3,
+          OrderDate: "2025-02-18",
+          ShipDate: "2025-02-27",
+          OrderStatus: "Shipped",
+          ShipAddress: "2947 Vine Lane",
+          BillAddress: "4311 Clay Rd",
+          Quantity: 3,
+          Sales: 90,
+          CreationTime: "2025-02-18 10:45:22.0000000",
+        },
+        {
+          OrderID: 9,
+          ProductID: 101,
+          CustomerID: 2,
+          SalesPersonID: 3,
+          OrderDate: "2025-03-10",
+          ShipDate: "2025-03-15",
+          OrderStatus: "Shipped",
+          ShipAddress: "3768 Door Way",
+          BillAddress: "",
+          Quantity: 2,
+          Sales: 20,
+          CreationTime: "2025-03-10 12:59:04.0000000",
+        },
+        {
+          OrderID: 10,
+          ProductID: 102,
+          CustomerID: 3,
+          SalesPersonID: 5,
+          OrderDate: "2025-03-15",
+          ShipDate: "2025-03-20",
+          OrderStatus: "Shipped",
+          ShipAddress: "NULL",
+          BillAddress: "NULL",
+          Quantity: 0,
+          Sales: 60,
+          CreationTime: "2025-03-16 23:25:15.0000000",
+        },
       ]
       setResultData(results)
       setRowCount(results.length)
@@ -191,6 +326,7 @@ export default function SQLIDEPage() {
                   zoom={editorZoom}
                   onZoomChange={handleZoomChange}
                   onCursorChange={handleCursorChange}
+                  showPlaceholder={activeTabId === "1"}
                 />
                 {showResults && (
                   <ResultsPanel
@@ -213,10 +349,10 @@ export default function SQLIDEPage() {
 
         <div className={`status-gap h-[6px] shrink-0 ${isDark ? "bg-[#2d2d30]" : "bg-[#f3f3f3]"}`} />
 
-        <div className={`global-status-bar flex h-[24px] shrink-0 items-center justify-between px-2 text-[11px] ${isDark ? "bg-[#5b5794] text-white" : "bg-[#d8d8ea] text-[#1e1e1e]"}`}>
+        <div className={`global-status-bar flex h-[24px] shrink-0 select-none items-center justify-between px-2 text-[11px] ${isDark ? "bg-[#5b5794] text-white" : "bg-[#5b5794] text-white"}`}>
           <div className="flex items-center gap-2">
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1">
-              <rect x="2" y="2" width="12" height="12" rx="1" />
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1">
+              <path d="M2 2.5h7.4L8.2 9.5H0.8z" fill="none" strokeLinejoin="miter" />
             </svg>
             <span>Ready</span>
           </div>

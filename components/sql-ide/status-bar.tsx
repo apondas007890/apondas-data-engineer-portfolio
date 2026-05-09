@@ -34,7 +34,7 @@ export function StatusBar({ rowCount, currentDatabase, zoom, onZoomChange, curso
     <div className="flex w-full flex-col">
       {/* Connection Status Bar - Khaki yellow - FULL WIDTH outside Object Explorer */}
       <div
-        className="sql-yellow-status flex h-[20px] min-w-0 items-center justify-between bg-[#f0e68c] px-2 text-[11px] text-[#1e1e1e]"
+        className="sql-yellow-status flex h-[20px] min-w-0 select-none items-center justify-between bg-[#f0e68c] px-2 text-[11px] text-[#1e1e1e]"
       >
         <div className="flex min-w-0 items-center gap-2">
           <div className="relative flex items-center" ref={zoomMenuRef}>
@@ -42,6 +42,12 @@ export function StatusBar({ rowCount, currentDatabase, zoom, onZoomChange, curso
               onClick={() => setShowZoomMenu((prev) => !prev)}
               className="flex items-center gap-1 px-1 text-[10px] hover:bg-black/10"
             >
+              <svg width="11" height="11" viewBox="0 0 16 16" aria-hidden="true">
+                <circle cx="6.2" cy="6.2" r="3.2" fill="none" stroke="#3f3f3f" strokeWidth="1.2" />
+                <path d="M10 10l2.8 2.8" stroke="#3f3f3f" strokeWidth="1.2" strokeLinecap="round" />
+                <path d="M6.2 4.9v2.6M4.9 6.2h2.6" stroke="#3f3f3f" strokeWidth="1.1" strokeLinecap="round" />
+                <path d="M11.8 3.1h2.2M12.9 2v2.2" stroke="#3f3f3f" strokeWidth="1.1" strokeLinecap="round" />
+              </svg>
               <span>{zoom} %</span>
               <span>▾</span>
             </button>

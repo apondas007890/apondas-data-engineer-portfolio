@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useTheme } from "@/app/page"
 
 interface ToolBarProps {
@@ -617,12 +617,10 @@ function ToolbarRowTwo({
       <div className="relative">
         <select
           value={currentDatabase}
-          onChange={(e) => onDatabaseChange(e.target.value)}
-          className="h-[24px] min-w-[168px] cursor-default appearance-none border border-[#3c3c3f] bg-[#333337] pl-2 pr-6 text-[12px] text-[#afb6b9] outline-none transition-colors hover:border-[#8f93c8] hover:shadow-[inset_0_0_0_1px_rgba(143,147,200,0.35)] focus:border-[#8f93c8] focus:shadow-[inset_0_0_0_1px_rgba(143,147,200,0.35)]"
+          onChange={(e) => onDatabaseChange(e.target.value === "master" ? "Portfolio" : e.target.value)}
+          className="h-[24px] min-w-[168px] cursor-default appearance-none select-none border border-[#3c3c3f] bg-[#333337] pl-2 pr-6 text-[12px] text-[#afb6b9] outline-none transition-colors hover:border-[#8f93c8] hover:shadow-[inset_0_0_0_1px_rgba(143,147,200,0.35)] focus:border-[#8f93c8] focus:shadow-[inset_0_0_0_1px_rgba(143,147,200,0.35)]"
         >
           <option>Portfolio</option>
-          <option>MyDatabase</option>
-          <option>DataWarehouse</option>
           <option>master</option>
         </select>
         <span className="pointer-events-none absolute right-[6px] top-1/2 -translate-y-1/2 text-[11px] text-[#afb6b9]">▾</span>
@@ -671,63 +669,403 @@ function ToolbarRowTwo({
 function SqlShadesRow() {
   const { theme, setTheme } = useTheme()
   const [isOpen, setIsOpen] = useState(false)
+  const [isContactOpen, setIsContactOpen] = useState(false)
+  const [contactName, setContactName] = useState("")
+  const [contactEmail, setContactEmail] = useState("")
+  const [contactMessage, setContactMessage] = useState("")
+  const [contactTouched, setContactTouched] = useState({
+    name: false,
+    email: false,
+    message: false,
+  })
+  const [contactSubmitted, setContactSubmitted] = useState(false)
+  const commandGuide = [
+    {
+      command: "SELECT * FROM View.about;",
+      note: "Shows personal/about information",
+    },
+    {
+      command: "SELECT * FROM View.education;",
+      note: "Shows education history",
+    },
+    {
+      command: "SELECT * FROM View.experience;",
+      note: "Shows internship/work experience",
+    },
+    {
+      command: "SELECT * FROM View.skills;",
+      note: "Shows technical skills",
+    },
+    {
+      command: "SELECT * FROM View.projects;",
+      note: "Shows portfolio projects",
+    },
+    {
+      command: "SELECT * FROM View.certifications;",
+      note: "Shows certificates and achievements",
+    },
+  ]
+  const quickActions = ["Contact", "Visual Portfolio"]
+  const normalizeEmailIdentity = (value: string) => {
+    const trimmed = value.trim().toLowerCase()
+    const atIndex = trimmed.indexOf("@")
+    if (atIndex === -1) return trimmed
+
+    const localPart = trimmed.slice(0, atIndex)
+    const domainPart = trimmed.slice(atIndex + 1)
+    const plusIndex = localPart.indexOf("+")
+    const localWithoutPlus = plusIndex >= 0 ? localPart.slice(0, plusIndex) : localPart
+    const canonicalLocal = localWithoutPlus.replace(/\./g, "")
+
+    return `${canonicalLocal}@${domainPart}`
+  }
+
+  const validateEmail = (value: string) => {
+    const trimmed = value.trim().toLowerCase()
+
+    if (!trimmed) {
+      return "Email is required."
+    }
+
+    if (trimmed.length < 6) {
+      return "Email must be at least 6 characters."
+    }
+
+    if (trimmed.length > 30) {
+      return "Email must be 30 characters or fewer."
+    }
+
+    const parts = trimmed.split("@")
+    if (parts.length !== 2) {
+      return "Please enter a valid email address."
+    }
+
+    const [localPart, domainPart] = parts
+    if (!localPart || !domainPart) {
+      return "Please enter a valid email address."
+    }
+
+    if (!/^[a-z0-9.+_-]+$/i.test(localPart)) {
+      return "Username contains invalid characters."
+    }
+
+    const domainLabels = domainPart.split(".")
+    if (
+      domainLabels.length < 2 ||
+      domainLabels.some((label) => !label || !/^[a-z0-9-]+$/i.test(label) || label.startsWith("-") || label.endsWith("-"))
+    ) {
+      return "Please enter a valid domain."
+    }
+
+    const topLevelDomain = domainLabels[domainLabels.length - 1]
+    if (topLevelDomain.length < 2) {
+      return "Please enter a valid domain."
+    }
+
+    return ""
+  }
+
+  const validation = useMemo(() => {
+    const nextName = contactName.trim() ? "" : "Name is required."
+    const nextEmail = validateEmail(contactEmail)
+    const nextMessage = contactMessage.trim() ? "" : "Message is required."
+    const canonicalEmail = contactEmail.trim() ? normalizeEmailIdentity(contactEmail) : ""
+
+    return {
+      name: nextName,
+      email: nextEmail,
+      message: nextMessage,
+      canonicalEmail,
+      isValid: !nextName && !nextEmail && !nextMessage,
+    }
+  }, [contactEmail, contactMessage, contactName])
+
+  useEffect(() => {
+    if (!isContactOpen) return
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsContactOpen(false)
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [isContactOpen])
+
+  const closeContact = () => setIsContactOpen(false)
+  const shouldShowError = (field: "name" | "email" | "message", value: string, error: string) =>
+    Boolean(error) && (contactSubmitted || contactTouched[field] || value.trim().length > 0)
+
+  const resetContactState = () => {
+    setContactName("")
+    setContactEmail("")
+    setContactMessage("")
+    setContactTouched({ name: false, email: false, message: false })
+    setContactSubmitted(false)
+  }
 
   return (
-    <div className="flex h-[30px] items-center bg-[#2d2d30] pl-0 pr-1">
-      <RowGrip />
-      <div className="relative">
-        <button
-          onClick={() => setIsOpen((prev) => !prev)}
-          className="flex h-[22px] cursor-default items-center gap-1 px-1.5 text-[12px] text-[#c7c7c7] hover:bg-[#35353b]"
-        >
-          <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
-            <rect x="1" y="1" width="14" height="14" rx="2" fill="rgba(182, 182, 211, 1)" />
-            <rect x="2.2" y="2.6" width="8" height="2.1" rx="0.8" fill="#273b3c" />
-            <rect x="2.2" y="6.3" width="8" height="2.1" rx="0.8" fill="#273b3c" />
-            <rect x="2.2" y="10" width="8" height="2.1" rx="0.8" fill="#273b3c" />
-            <path d="M11.5 4.5a4.2 4.2 0 1 1-2.8 7.4 3.4 3.4 0 1 0 2.8-7.4z" fill="#273b3c" />
-          </svg>
-          <span>SQL Shades</span>
-          <span className="ml-0.5 flex flex-col items-center leading-[8px] text-[#9f9f9f]">
-            <span className="text-[10px]">-</span>
-            <span className="text-[10px]">▾</span>
-          </span>
-        </button>
+    <>
+      <div className="flex h-[30px] items-center bg-[#2d2d30] pl-0 pr-1">
+        <RowGrip />
+        <div className="relative">
+          <button
+            onClick={() => setIsOpen((prev) => !prev)}
+            className="flex h-[22px] cursor-default items-center gap-1 px-1.5 text-[12px] text-[#c7c7c7] hover:bg-[#35353b]"
+          >
+            <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
+              <rect x="1" y="1" width="14" height="14" rx="2" fill="rgba(182, 182, 211, 1)" />
+              <rect x="2.2" y="2.6" width="8" height="2.1" rx="0.8" fill="#273b3c" />
+              <rect x="2.2" y="6.3" width="8" height="2.1" rx="0.8" fill="#273b3c" />
+              <rect x="2.2" y="10" width="8" height="2.1" rx="0.8" fill="#273b3c" />
+              <path d="M11.5 4.5a4.2 4.2 0 1 1-2.8 7.4 3.4 3.4 0 1 0 2.8-7.4z" fill="#273b3c" />
+            </svg>
+            <span>SQL Shades</span>
+            <span className="ml-0.5 flex flex-col items-center leading-[8px] text-[#9f9f9f]">
+              <span className="text-[10px]">-</span>
+              <span className="text-[10px]">▾</span>
+            </span>
+          </button>
 
-        {isOpen && (
-          <div className="absolute left-0 top-full z-30 mt-1 min-w-[98px] border border-[#4a4a4a] bg-[#232327] py-1 text-[11px]">
-            <button
-              onClick={() => {
-                setTheme("dark")
-                setIsOpen(false)
-              }}
-              className={`flex w-full items-center px-2 py-1 text-left hover:bg-[#35353b] ${
-                theme === "dark" ? "text-[#e0e0e0]" : "text-[#b7b7b7]"
-              }`}
-            >
-              Dark
+          {isOpen && (
+            <div className="absolute left-0 top-full z-30 mt-1 min-w-[98px] border border-[#4a4a4a] bg-[#232327] py-1 text-[11px]">
+              <button
+                onClick={() => {
+                  setTheme("dark")
+                  setIsOpen(false)
+                }}
+                className={`flex w-full items-center px-2 py-1 text-left hover:bg-[#35353b] ${
+                  theme === "dark" ? "text-[#e0e0e0]" : "text-[#b7b7b7]"
+                }`}
+              >
+                Dark
+              </button>
+              <button
+                onClick={() => {
+                  setTheme("light")
+                  setIsOpen(false)
+                }}
+                className={`flex w-full items-center px-2 py-1 text-left hover:bg-[#35353b] ${
+                  theme === "light" ? "text-[#e0e0e0]" : "text-[#b7b7b7]"
+                }`}
+              >
+                Light
+              </button>
+            </div>
+          )}
+        </div>
+        <div className="ml-2 flex items-center gap-1">
+          <div className="group relative">
+            <button className="flex h-[22px] items-center border border-[#3f3f46] bg-[#35353b] px-2.5 text-[11px] text-[#c7c7c7] hover:bg-[#3c3c43]">
+              Help
             </button>
-            <button
-              onClick={() => {
-                setTheme("light")
-                setIsOpen(false)
-              }}
-              className={`flex w-full items-center px-2 py-1 text-left hover:bg-[#35353b] ${
-                theme === "light" ? "text-[#e0e0e0]" : "text-[#b7b7b7]"
-              }`}
-            >
-              Light
-            </button>
+            <div className="pointer-events-none invisible absolute left-0 top-full z-40 mt-1 w-[min(420px,calc(100vw-24px))] border border-[#505085] bg-[#252526] opacity-0 shadow-[0_8px_22px_rgba(0,0,0,0.45)] transition-opacity duration-150 group-hover:pointer-events-auto group-hover:visible group-hover:opacity-100">
+              <div className="border-b border-[#505085] bg-[#5b5794] px-3 py-2">
+                <div className="text-[13px] font-semibold text-[#f3ec7a]">Welcome to SQL Shades</div>
+                <div className="mt-0.5 text-[11px] text-[#d8d8ea]">
+                  A SQL Server inspired portfolio where you can query my profile like a database.
+                </div>
+              </div>
+              <div className="px-3 py-3 text-[11px] leading-5 text-[#d4d4d4]">
+                <p className="mb-3">
+                  This portfolio works like a mini SSMS interface. Instead of clicking normal sections,
+                  visitors can explore my information by running SQL-style commands. Think of each
+                  portfolio section as a database view.
+                </p>
+                <div className="border border-[#3c3c3c] bg-[#232327] px-3 py-2 font-mono text-[12px] leading-6">
+                  {commandGuide.map((item) => {
+                    const [viewPrefix, viewName] = item.command.split("View.")
+                    return (
+                      <div key={item.command} className="mb-2 last:mb-0">
+                        <div>
+                          <span className="text-[#4c91cb]">SELECT</span>
+                          <span className="text-[#d4d4d4]"> * </span>
+                          <span className="text-[#4c91cb]">FROM</span>
+                          <span className="text-[#d4d4d4]"> </span>
+                          <span className="text-[#c978ea]">{`${viewPrefix}View.${viewName}`}</span>
+                        </div>
+                        <div className="text-[#a7bb86]">{`-- ${item.note}`}</div>
+                      </div>
+                    )
+                  })}
+                </div>
+                <div className="mt-3 border-t border-[#3c3c3c] pt-2">
+                  <div className="text-[11px] font-semibold text-[#f3ec7a]">Tip</div>
+                  <div className="mt-1 text-[#858585]">
+                    Use <span className="font-mono text-[#d4d4d4]">SELECT * FROM View.section_name;</span>{" "}
+                    to explore each part of the portfolio.
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-        )}
+          {quickActions.map((label) => (
+            <button
+              key={label}
+              onClick={
+                label === "Contact"
+                  ? () => {
+                      resetContactState()
+                      setIsContactOpen(true)
+                    }
+                  : undefined
+              }
+              className="flex h-[22px] items-center border border-[#3f3f46] bg-[#35353b] px-2.5 text-[11px] text-[#c7c7c7] hover:bg-[#3c3c43]"
+            >
+              {label}
+            </button>
+          ))}
+        </div>
       </div>
-    </div>
+      {isContactOpen ? (
+        <div
+          className="fixed inset-0 z-[85] flex items-center justify-center bg-black/45 backdrop-blur-[2px]"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) {
+              closeContact()
+            }
+          }}
+        >
+          <div
+            className="w-[min(420px,calc(100vw-32px))] border border-[#505085] bg-[#2d2d30] shadow-[0_14px_30px_rgba(0,0,0,0.5)]"
+            style={{ animation: "ssmsHelpIn 150ms ease-out" }}
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <div className="flex h-[32px] items-center justify-between border-b border-[#505085] bg-[linear-gradient(to_right,#5b5794,#474373)] pl-3">
+              <div className="text-[13px] font-semibold text-white">Contact</div>
+              <button
+                type="button"
+                aria-label="Close contact form"
+                onClick={closeContact}
+                className="grid h-[31px] w-[32px] place-items-center text-[#d4d4d4] hover:bg-[#4f5b86] hover:text-white active:bg-[#c42b1c] active:text-white"
+              >
+                ×
+              </button>
+            </div>
+            <div className="bg-[#252526] px-[14px] py-[14px] text-[12px] text-[#d4d4d4]">
+              <div className="mb-[10px] text-[12px] leading-[18px] text-[#bfc0c3]">
+                Send a message through the SSMS-style contact form. We’ll keep it compact and clean.
+              </div>
+
+              <div className="space-y-[10px]">
+                <div>
+                  <label className="mb-[4px] block text-[12px] text-[#d4d4d4]">Name</label>
+                  <input
+                    placeholder="Enter your name"
+                    value={contactName}
+                    onChange={(event) => setContactName(event.target.value)}
+                    onBlur={() => setContactTouched((prev) => ({ ...prev, name: true }))}
+                    className={`h-[30px] w-full border bg-[#1e1e1e] px-2 text-[12px] text-[#d4d4d4] placeholder-[#858585] outline-none transition-colors ${
+                      shouldShowError("name", contactName, validation.name)
+                        ? "border-[#ef4444] focus:border-[#ef4444]"
+                        : contactName.trim()
+                          ? "border-[#22c55e] focus:border-[#22c55e]"
+                          : "border-[#4a4a4a] focus:border-[#4c91cb]"
+                    }`}
+                  />
+                  <div
+                    className={`mt-[3px] min-h-[15px] text-[11px] ${
+                      shouldShowError("name", contactName, validation.name)
+                        ? "text-[#ef4444]"
+                        : "text-transparent"
+                    }`}
+                  >
+                    {shouldShowError("name", contactName, validation.name) ? validation.name : "."}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="mb-[4px] block text-[12px] text-[#d4d4d4]">Email</label>
+                  <input
+                    placeholder="Enter your email address"
+                    value={contactEmail}
+                    onChange={(event) => setContactEmail(event.target.value.replace(/^\s+|\s+$/g, ""))}
+                    onBlur={() => {
+                      setContactEmail((prev) => prev.trim())
+                      setContactTouched((prev) => ({ ...prev, email: true }))
+                    }}
+                    className={`h-[30px] w-full border bg-[#1e1e1e] px-2 text-[12px] text-[#d4d4d4] placeholder-[#858585] outline-none transition-colors ${
+                      shouldShowError("email", contactEmail, validation.email)
+                        ? "border-[#ef4444] focus:border-[#ef4444]"
+                        : contactEmail.trim()
+                          ? "border-[#22c55e] focus:border-[#22c55e]"
+                          : "border-[#4a4a4a] focus:border-[#4c91cb]"
+                    }`}
+                  />
+                  <div
+                    className={`mt-[3px] min-h-[15px] text-[11px] ${
+                      shouldShowError("email", contactEmail, validation.email)
+                        ? "text-[#ef4444]"
+                        : "text-transparent"
+                    }`}
+                  >
+                    {shouldShowError("email", contactEmail, validation.email)
+                      ? validation.email
+                      : "."}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="mb-[4px] block text-[12px] text-[#d4d4d4]">Message</label>
+                  <textarea
+                    placeholder="Write your message here..."
+                    value={contactMessage}
+                    onChange={(event) => setContactMessage(event.target.value)}
+                    onBlur={() => setContactTouched((prev) => ({ ...prev, message: true }))}
+                    rows={4}
+                    className={`w-full resize-none border bg-[#1e1e1e] px-2 py-[6px] text-[12px] text-[#d4d4d4] placeholder-[#858585] outline-none transition-colors ${
+                      shouldShowError("message", contactMessage, validation.message)
+                        ? "border-[#ef4444] focus:border-[#ef4444]"
+                        : contactMessage.trim()
+                          ? "border-[#22c55e] focus:border-[#22c55e]"
+                          : "border-[#4a4a4a] focus:border-[#4c91cb]"
+                    }`}
+                  />
+                  <div
+                    className={`mt-[3px] min-h-[15px] text-[11px] ${
+                      shouldShowError("message", contactMessage, validation.message)
+                        ? "text-[#ef4444]"
+                        : "text-transparent"
+                    }`}
+                  >
+                    {shouldShowError("message", contactMessage, validation.message) ? validation.message : "."}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-[12px] flex justify-end gap-2 border-t border-[#3c3c3c] pt-[10px]">
+                <button
+                  type="button"
+                  onClick={closeContact}
+                  className="h-[28px] border border-[#555555] bg-[#3f3f46] px-3 text-[12px] text-[#d4d4d4] hover:bg-[#4a4a50]"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setContactSubmitted(true)}
+                  disabled={!validation.isValid}
+                  className={`h-[28px] border px-3 text-[12px] ${
+                    validation.isValid
+                      ? "border-[#f0e68c] bg-[#6f5d1e] text-white hover:bg-[#857028]"
+                      : "cursor-not-allowed border-[#4a4a4a] bg-[#2f3035] text-[#767676] opacity-75"
+                  }`}
+                >
+                  Submit
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </>
   )
 }
 
 export function ToolBar(props: ToolBarProps) {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col select-none">
       <ToolbarRowOne onNewQuery={props.onNewQuery} />
       <ToolbarRowTwo
         isExecuting={props.isExecuting}

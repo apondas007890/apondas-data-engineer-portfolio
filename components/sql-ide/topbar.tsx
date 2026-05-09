@@ -22,7 +22,7 @@ export function Topbar({
   const titleText = "APON\\SQLEXPRESS.MyDatabase (APON\\ASUS (70))* - Microsoft SQL Server Management Studio"
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col select-none">
       <TitleBar title={titleText} />
       <MenuBar />
       <ToolBar

@@ -10,6 +10,7 @@ interface EditorProps {
   zoom: number
   onZoomChange: (zoom: number) => void
   onCursorChange: (cursor: CursorPosition) => void
+  showPlaceholder?: boolean
 }
 
 const SQL_KEYWORDS = [
@@ -238,7 +239,7 @@ const renderHighlightedSql = (text: string) => {
   return segments
 }
 
-export function Editor({ content, onChange, zoom, onZoomChange, onCursorChange }: EditorProps) {
+export function Editor({ content, onChange, zoom, onZoomChange, onCursorChange, showPlaceholder = false }: EditorProps) {
   const { theme } = useTheme()
   const isDark = theme === "dark"
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -262,7 +263,7 @@ export function Editor({ content, onChange, zoom, onZoomChange, onCursorChange }
   const scaleMetric = (value: number, min = 0) => Math.max(min, Math.round(value * zoomFactor))
   const fontSize = Math.max(8, Math.round(12 * zoomFactor))
   const lineHeight = Math.max(scaleMetric(17, 17), fontSize + scaleMetric(2, 2))
-  const rowBoxHeight = Math.max(lineHeight - scaleMetric(2, 1), fontSize + scaleMetric(2, 2))
+  const rowBoxHeight = Math.max(lineHeight, fontSize + scaleMetric(2, 2))
   const textLineHeight = lineHeight
   const gutterPaddingTop = 0
   const editorPaddingTop = 1
@@ -280,14 +281,13 @@ export function Editor({ content, onChange, zoom, onZoomChange, onCursorChange }
   const editorTextPaddingLeft = activeRowLeft + scaleMetric(3, 3)
   const editorTextPaddingRight = scaleMetric(8, 8)
   const rowVisualTop = gutterPaddingTop + activeRowTopOffset
-  const caretTopInset = scaleMetric(2, 1)
+  const caretTopInset = scaleMetric(1, 0)
   const caretHeight = Math.max(rowBoxHeight - caretTopInset * 2, Math.max(12, fontSize))
   const numberAreaLeft = gutterLeftMarginWidth + gutterNumberGap
   const activeBarLeft = numberAreaLeft + lineNumberAreaWidth + scaleMetric(2, 2)
-  const activeBarLineCount = Math.max(1, lineCount)
   const caretLeft =
     activeColumn <= 1
-      ? activeRowLeft + scaleMetric(2, 2) - scrollLeft
+      ? activeRowLeft + scaleMetric(1, 1) - scrollLeft
       : editorTextPaddingLeft + (activeColumn - 1) * charWidth - scrollLeft
   const highlightedSegments = useMemo(() => renderHighlightedSql(content), [content])
 
@@ -421,15 +421,23 @@ export function Editor({ content, onChange, zoom, onZoomChange, onCursorChange }
           className={isDark ? "absolute inset-y-0 left-0 bg-[#333333]" : "absolute inset-y-0 left-0 bg-[#e9e9e9]"}
           style={{ width: `${gutterLeftMarginWidth}px` }}
         />
-        <div
-          className="pointer-events-none absolute z-10 bg-[#f3ec7a]"
-          style={{
-            top: `${rowVisualTop - scrollTop}px`,
-            left: `${activeBarLeft}px`,
-            width: `${activeBarWidth}px`,
-            height: `${activeBarLineCount * lineHeight}px`,
-          }}
-        />
+        <div className="pointer-events-none absolute inset-0 z-10">
+          {Array.from({ length: lineCount }, (_, i) => (
+            <div
+              key={`active-bar-${i + 1}`}
+              className="absolute bg-[#f3ec7a]"
+              style={{
+                top: `${rowVisualTop + i * lineHeight - scrollTop}px`,
+                left: `${activeBarLeft}px`,
+                width: `${activeBarWidth}px`,
+                height: `${rowBoxHeight}px`,
+                borderTop: i > 0 ? "1px solid #2d2d30" : "none",
+                borderRight: "1px solid #4a4a4a",
+                boxSizing: "border-box",
+              }}
+            />
+          ))}
+        </div>
         <div className="relative" style={{ transform: `translateY(-${scrollTop}px)` }}>
           {Array.from({ length: lineCount }, (_, i) => (
             <div
@@ -481,6 +489,23 @@ export function Editor({ content, onChange, zoom, onZoomChange, onCursorChange }
               height: `${caretHeight}px`,
             }}
           />
+        )}
+        {showPlaceholder && isEmpty && (
+          <div
+            className={`pointer-events-none absolute flex items-center font-mono ${
+              isDark ? "text-[#858585]" : "text-[#6b6b6b]"
+            }`}
+            style={{
+              zIndex: 25,
+              top: `${rowVisualTop + (Math.max(activeLine, 1) - 1) * lineHeight - scrollTop}px`,
+              left: `${editorTextPaddingLeft - scrollLeft}px`,
+              height: `${rowBoxHeight}px`,
+              fontSize: `${fontSize}px`,
+              lineHeight: `${textLineHeight}px`,
+            }}
+          >
+            Start your query here...
+          </div>
         )}
         <div
           className="pointer-events-none absolute inset-0 z-10 overflow-hidden"

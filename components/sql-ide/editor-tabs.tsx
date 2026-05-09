@@ -23,7 +23,7 @@ export function EditorTabs({ tabs, activeTabId, onTabChange, onCloseTab }: Edito
 
   return (
     <div
-      className={`flex h-[21px] min-h-[21px] max-h-[21px] min-w-0 items-center ${
+      className={`flex h-[21px] min-h-[21px] max-h-[21px] min-w-0 items-center select-none ${
         isDark ? "bg-[#2d2d30]" : "bg-[#eeeef2]"
       }`}
       style={{ height: "21px", minHeight: "21px", maxHeight: "21px", lineHeight: "21px", boxSizing: "border-box" }}
