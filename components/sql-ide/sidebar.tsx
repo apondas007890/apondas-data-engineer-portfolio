@@ -3,12 +3,13 @@
 import { useEffect, useState } from "react"
 import { useTheme } from "@/app/page"
 import { ChevronDownIcon, ChevronRightIcon, XIcon } from "lucide-react"
+import { portfolioDatabaseChildren, type PortfolioSchemaNode } from "@/src/data/portfolioDbSchema"
 
 interface SidebarProps {
   width: number
   onWidthChange: (width: number) => void
   selectedNode: string | null
-  onSelectNode: (node: string | null) => void
+  onSelectNode: (node: string | null, query?: string) => void
 }
 
 // Server icon with green connection indicator - #414141 fill with #f0eff1 inner details
@@ -84,10 +85,17 @@ const ColumnIcon = ({ isDark, isPK = false }: { isDark: boolean; isPK?: boolean 
   <svg width="16" height="16" viewBox="0 0 16 16" className="flex-shrink-0">
     {isPK ? (
       <>
-        {/* Key icon for primary key */}
-        <circle cx="5" cy="5" r="3" fill="#c9a227" stroke="#c9a227" strokeWidth="0.5" />
-        <circle cx="5" cy="5" r="1.2" fill={isDark ? "#414141" : "#f0eff1"} />
-        <path d="M7 7l5 5M10 10l2-2" stroke="#c9a227" strokeWidth="1.5" fill="none" />
+        {/* Use neutral SSMS-like color to match other icons */}
+        {(() => {
+          const keyColor = isDark ? "#d7d7d8" : "#6f7074"
+          return (
+            <>
+              <circle cx="5" cy="5" r="3" fill={keyColor} stroke={keyColor} strokeWidth="0.5" />
+              <circle cx="5" cy="5" r="1.2" fill={isDark ? "#414141" : "#f0eff1"} />
+              <path d="M7 7l5 5M10 10l2-2" stroke={keyColor} strokeWidth="1.5" fill="none" />
+            </>
+          )
+        })()}
       </>
     ) : (
       <>
@@ -439,8 +447,38 @@ interface TreeNode {
   label: string
   iconType: "server" | "folder" | "database" | "table" | "view" | "column" | "column-pk" | "key" | "statistics" | "security" | "user" | "role" | "schema" | "certificate" | "broker-item" | "procedure" | "function" | "assembly" | "box" | "replication" | "management" | "profiler" | "diagram" | "provider" | "trigger" | "policy" | "event-session" | "log" | "subscription"
   folderColor?: string
+  dataType?: string
+  keyType?: "PK" | "FK"
+  nullable?: boolean
+  query?: string
   children?: TreeNode[]
 }
+
+const mapPortfolioTypeToIcon = (type: PortfolioSchemaNode["type"], keyType?: "PK" | "FK"): TreeNode["iconType"] => {
+  if (type === "database" || type === "server") return type
+  if (type === "table") return "table"
+  if (type === "view") return "view"
+  if (type === "procedure") return "procedure"
+  if (type === "function") return "function"
+  if (type === "trigger") return "trigger"
+  if (type === "column") {
+    return keyType === "PK" ? "column-pk" : "column"
+  }
+  return "folder"
+}
+
+const mapPortfolioNodes = (nodes: PortfolioSchemaNode[]): TreeNode[] =>
+  nodes.map((node) => ({
+    id: node.id,
+    label: node.label,
+    iconType: mapPortfolioTypeToIcon(node.type, node.keyType),
+    folderColor: "#e8c44d",
+    dataType: node.dataType,
+    keyType: node.keyType,
+    nullable: node.nullable,
+    query: node.query,
+    children: node.children ? mapPortfolioNodes(node.children) : undefined,
+  }))
 
 const masterSecurityChildren: TreeNode[] = [
   {
@@ -2006,7 +2044,7 @@ const treeData: TreeNode[] = [
             ],
           },
           { id: "database-snapshots", label: "Database Snapshots", iconType: "folder", folderColor: "#e8c44d" },
-          { id: "portfolio", label: "Portfolio", iconType: "database" },
+          { id: "portfolio", label: "Portfolio", iconType: "database", children: mapPortfolioNodes(portfolioDatabaseChildren) },
         ],
       },
       {
@@ -2116,6 +2154,7 @@ export function Sidebar({ width, onWidthChange, selectedNode, onSelectNode }: Si
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isPinned, setIsPinned] = useState(true)
   const [isVisible, setIsVisible] = useState(true)
+  const [searchText, setSearchText] = useState("")
 
   // hsl(240, 25%, 42%) for focused sidebar header
   const focusedColor = "hsl(240, 25%, 42%)"
@@ -2164,11 +2203,42 @@ export function Sidebar({ width, onWidthChange, selectedNode, onSelectNode }: Si
     document.removeEventListener("mouseup", handleMouseUp)
   }
 
+  const getNodeQuery = (node: TreeNode): string | undefined => {
+    if (node.query) return node.query
+    if (node.iconType === "table") return `SELECT TOP (1000) *\nFROM ${node.label};`
+    if (node.iconType === "view") return `SELECT *\nFROM ${node.label};`
+    if (node.iconType === "procedure") return `EXEC ${node.label};`
+    return undefined
+  }
+
+  const nodeMatches = (node: TreeNode, term: string): boolean => {
+    if (!term) return true
+    const normalized = term.toLowerCase()
+    const selfMatch =
+      node.label.toLowerCase().includes(normalized) ||
+      (node.dataType?.toLowerCase().includes(normalized) ?? false)
+    if (selfMatch) return true
+    if (!node.children?.length) return false
+    return node.children.some((child) => nodeMatches(child, term))
+  }
+
+  const filterNodes = (nodes: TreeNode[], term: string): TreeNode[] =>
+    nodes
+      .filter((node) => nodeMatches(node, term))
+      .map((node) => ({
+        ...node,
+        children: node.children ? filterNodes(node.children, term) : undefined,
+      }))
+
   const renderTree = (nodes: TreeNode[], depth = 0) => {
     return nodes.map((node) => {
       const hasChildren = node.children && node.children.length > 0
       const isExpanded = expandedNodes.has(node.id)
       const isSelected = selectedNode === node.id
+      const isColumnNode = node.iconType === "column" || node.iconType === "column-pk"
+      const columnDescriptor = isColumnNode
+        ? `(${node.keyType ? `${node.keyType}, ` : ""}${node.dataType ?? "text"}, ${node.nullable === false ? "not null" : "null"})`
+        : null
 
       return (
         <div key={node.id}>
@@ -2182,7 +2252,7 @@ export function Sidebar({ width, onWidthChange, selectedNode, onSelectNode }: Si
             }`}
             style={{ paddingLeft: `${depth * 12 + 4}px` }}
             onClick={() => {
-              onSelectNode(node.id)
+              onSelectNode(node.id, getNodeQuery(node))
               if (hasChildren) {
                 toggleNode(node.id)
               }
@@ -2233,6 +2303,11 @@ export function Sidebar({ width, onWidthChange, selectedNode, onSelectNode }: Si
               >
                 {node.label}
               </span>
+              {columnDescriptor ? (
+                <span className={`ml-1 truncate whitespace-nowrap text-[11px] ${isDark ? "text-[#d0d0d0]" : "text-[#4f4f52]"}`}>
+                  {columnDescriptor}
+                </span>
+              ) : null}
             </div>
           </div>
           {hasChildren && isExpanded && <div>{renderTree(node.children!, depth + 1)}</div>}
@@ -2400,6 +2475,21 @@ export function Sidebar({ width, onWidthChange, selectedNode, onSelectNode }: Si
 
         {/* Tree View - with custom scrollbar */}
         {!isCollapsed && (
+        <div className={`px-1 pb-1 pt-1 ${isDark ? "bg-[#1e1e1e]" : "bg-white"}`}>
+          <input
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            placeholder="Search objects..."
+            className={`h-6 w-full border px-2 text-[11px] outline-none ${
+              isDark
+                ? "border-[#3a3a3a] bg-[#252526] text-[#d4d4d4] placeholder:text-[#8b8b8b]"
+                : "border-[#d0d0d0] bg-white text-[#222222] placeholder:text-[#888888]"
+            }`}
+          />
+        </div>
+        )}
+
+        {!isCollapsed && (
         <div
           className={`object-explorer-tree flex-1 overflow-auto ${isDark ? "ssms-scrollbar-dark bg-[#1e1e1e]" : "ssms-scrollbar-light bg-white"}`}
           style={{
@@ -2407,7 +2497,7 @@ export function Sidebar({ width, onWidthChange, selectedNode, onSelectNode }: Si
             scrollbarColor: isDark ? "#4a4a4a #252526" : "#c0c0c0 #f3f3f3",
           }}
         >
-          {renderTree(treeData)}
+          {renderTree(filterNodes(treeData, searchText.trim()))}
         </div>
         )}
 

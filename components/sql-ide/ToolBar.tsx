@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react"
 import { useTheme } from "@/app/page"
+import { supabase } from "@/src/lib/supabase/client"
 
 interface ToolBarProps {
   isExecuting: boolean
@@ -681,31 +682,31 @@ function SqlShadesRow() {
   const [contactSubmitted, setContactSubmitted] = useState(false)
   const commandGuide = [
     {
-      command: "SELECT * FROM View.about;",
+      command: "SELECT * FROM Portfolio.about;",
       note: "Shows personal/about information",
     },
     {
-      command: "SELECT * FROM View.education;",
+      command: "SELECT * FROM Portfolio.educations;",
       note: "Shows education history",
     },
     {
-      command: "SELECT * FROM View.experience;",
+      command: "SELECT * FROM Portfolio.experiences;",
       note: "Shows internship/work experience",
     },
     {
-      command: "SELECT * FROM View.skills;",
+      command: "SELECT * FROM Portfolio.skills;",
       note: "Shows technical skills",
     },
     {
-      command: "SELECT * FROM View.projects;",
+      command: "SELECT * FROM Portfolio.projects;",
       note: "Shows portfolio projects",
     },
     {
-      command: "SELECT * FROM View.certifications;",
+      command: "SELECT * FROM Portfolio.certifications;",
       note: "Shows certificates and achievements",
     },
   ]
-  const quickActions = ["Contact", "Visual Portfolio"]
+  const quickActions = ["Contact", "Resume", "Visual Portfolio"]
   const normalizeEmailIdentity = (value: string) => {
     const trimmed = value.trim().toLowerCase()
     const atIndex = trimmed.indexOf("@")
@@ -805,6 +806,34 @@ function SqlShadesRow() {
     setContactSubmitted(false)
   }
 
+  const handleResumeOpen = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("resumes")
+        .select("file_url")
+        .is("deleted_at", null)
+        .eq("is_active", true)
+        .order("updated_at", { ascending: false })
+        .limit(1)
+        .maybeSingle()
+
+      if (error) {
+        window.alert(`Failed to load resume: ${error.message}`)
+        return
+      }
+
+      if (!data?.file_url) {
+        window.alert("No active resume found.")
+        return
+      }
+
+      window.open(data.file_url, "_blank", "noopener,noreferrer")
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Unknown error"
+      window.alert(`Failed to open resume: ${message}`)
+    }
+  }
+
   return (
     <>
       <div className="flex h-[30px] items-center bg-[#2d2d30] pl-0 pr-1">
@@ -862,7 +891,7 @@ function SqlShadesRow() {
             </button>
             <div className="pointer-events-none invisible absolute left-0 top-full z-40 mt-1 w-[min(420px,calc(100vw-24px))] border border-[#505085] bg-[#252526] opacity-0 shadow-[0_8px_22px_rgba(0,0,0,0.45)] transition-opacity duration-150 group-hover:pointer-events-auto group-hover:visible group-hover:opacity-100">
               <div className="border-b border-[#505085] bg-[#5b5794] px-3 py-2">
-                <div className="text-[13px] font-semibold text-[#f3ec7a]">Welcome to SQL Shades</div>
+                <div className="text-[13px] font-semibold text-[#f3ec7a]">Welcome to Apon's Portfolio</div>
                 <div className="mt-0.5 text-[11px] text-[#d8d8ea]">
                   A SQL Server inspired portfolio where you can query my profile like a database.
                 </div>
@@ -875,26 +904,21 @@ function SqlShadesRow() {
                 </p>
                 <div className="border border-[#3c3c3c] bg-[#232327] px-3 py-2 font-mono text-[12px] leading-6">
                   {commandGuide.map((item) => {
-                    const [viewPrefix, viewName] = item.command.split("View.")
                     return (
                       <div key={item.command} className="mb-2 last:mb-0">
                         <div>
-                          <span className="text-[#4c91cb]">SELECT</span>
-                          <span className="text-[#d4d4d4]"> * </span>
-                          <span className="text-[#4c91cb]">FROM</span>
-                          <span className="text-[#d4d4d4]"> </span>
-                          <span className="text-[#c978ea]">{`${viewPrefix}View.${viewName}`}</span>
+                          <span className="text-[#c978ea]">{item.command}</span>
                         </div>
                         <div className="text-[#a7bb86]">{`-- ${item.note}`}</div>
                       </div>
                     )
                   })}
                 </div>
-                <div className="mt-3 border-t border-[#3c3c3c] pt-2">
+                <div className="mt-1 border-t border-[#3c3c3c] pt-0.5">
                   <div className="text-[11px] font-semibold text-[#f3ec7a]">Tip</div>
-                  <div className="mt-1 text-[#858585]">
-                    Use <span className="font-mono text-[#d4d4d4]">SELECT * FROM View.section_name;</span>{" "}
-                    to explore each part of the portfolio.
+                  <div className="mt-0 leading-4 text-[#858585]">
+                    Use <span className="font-mono text-[#d4d4d4]">SELECT * FROM Portfolio.section_name;</span>{" "}
+                    and press <span className="text-[#ffffff]">Execute</span> to explore each part of the portfolio.
                   </div>
                 </div>
               </div>
@@ -909,6 +933,8 @@ function SqlShadesRow() {
                       resetContactState()
                       setIsContactOpen(true)
                     }
+                  : label === "Resume"
+                    ? handleResumeOpen
                   : undefined
               }
               className="flex h-[22px] items-center border border-[#3f3f46] bg-[#35353b] px-2.5 text-[11px] text-[#c7c7c7] hover:bg-[#3c3c43]"

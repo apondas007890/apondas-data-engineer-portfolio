@@ -353,18 +353,20 @@ export function ConnectDialog({ onConnect, onCancel, onHelp, onOptions }: Connec
 
               <section className="connect-help-section">
                 <h3>Visual Portfolio Button</h3>
-                <p><span className="help-accent-blue">Visual Portfolio</span> is shown in the interface for now, but it does not perform any action yet.</p>
+                <p>
+                  Click <span className="help-accent-blue">Visual Portfolio</span> to switch from the SSMS-style workspace to the standard portfolio view, where you can browse About, Education, Experience, Skills, and Projects in a normal visual layout.
+                </p>
               </section>
 
               <section className="connect-help-section">
                 <h3>How to Query</h3>
                 <div className="connect-help-code">
-                  <div><span className="help-keyword">SELECT</span> * <span className="help-keyword">FROM</span> <span className="help-view">View.about</span> <span className="help-comment">-- Shows personal / about information</span></div>
-                  <div><span className="help-keyword">SELECT</span> * <span className="help-keyword">FROM</span> <span className="help-view">View.education</span> <span className="help-comment">-- Shows education history</span></div>
-                  <div><span className="help-keyword">SELECT</span> * <span className="help-keyword">FROM</span> <span className="help-view">View.experience</span> <span className="help-comment">-- Shows internship and work experience</span></div>
-                  <div><span className="help-keyword">SELECT</span> * <span className="help-keyword">FROM</span> <span className="help-view">View.projects</span> <span className="help-comment">-- Shows portfolio projects</span></div>
-                  <div><span className="help-keyword">SELECT</span> * <span className="help-keyword">FROM</span> <span className="help-view">View.skills</span> <span className="help-comment">-- Shows technical skills</span></div>
-                  <div><span className="help-keyword">SELECT</span> * <span className="help-keyword">FROM</span> <span className="help-view">View.certifications</span> <span className="help-comment">-- Shows certificates and achievements</span></div>
+                  <div><span className="help-keyword">SELECT</span> * <span className="help-keyword">FROM</span> <span className="help-view">Portfolio.about</span> <span className="help-comment">-- Shows personal / about information</span></div>
+                  <div><span className="help-keyword">SELECT</span> * <span className="help-keyword">FROM</span> <span className="help-view">Portfolio.educations</span> <span className="help-comment">-- Shows education history</span></div>
+                  <div><span className="help-keyword">SELECT</span> * <span className="help-keyword">FROM</span> <span className="help-view">Portfolio.experiences</span> <span className="help-comment">-- Shows internship and work experience</span></div>
+                  <div><span className="help-keyword">SELECT</span> * <span className="help-keyword">FROM</span> <span className="help-view">Portfolio.projects</span> <span className="help-comment">-- Shows portfolio projects</span></div>
+                  <div><span className="help-keyword">SELECT</span> * <span className="help-keyword">FROM</span> <span className="help-view">Portfolio.skills</span> <span className="help-comment">-- Shows technical skills</span></div>
+                  <div><span className="help-keyword">SELECT</span> * <span className="help-keyword">FROM</span> <span className="help-view">Portfolio.certifications</span> <span className="help-comment">-- Shows certificates and achievements</span></div>
                 </div>
                 <p className="connect-help-note">Results will appear in grid or text format depending on the selected results mode.</p>
               </section>

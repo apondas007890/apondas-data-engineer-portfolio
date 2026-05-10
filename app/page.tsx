@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useCallback, createContext, useContext } from "react"
+import { useRouter } from "next/navigation"
 import { Topbar } from "@/components/sql-ide/topbar"
 import { Sidebar } from "@/components/sql-ide/sidebar"
 import { EditorTabs } from "@/components/sql-ide/editor-tabs"
@@ -9,6 +10,7 @@ import { ResultsPanel } from "@/components/sql-ide/results-panel"
 import { StatusBar } from "@/components/sql-ide/status-bar"
 import { SplashScreen } from "@/components/sql-ide/splash-screen"
 import { ConnectDialog } from "@/components/sql-ide/connect-dialog"
+import { supabase } from "@/src/lib/supabase/client"
 
 export interface Tab {
   id: string
@@ -42,6 +44,13 @@ export const ThemeContext = createContext<ThemeContextType>({
 export const useTheme = () => useContext(ThemeContext)
 
 export default function SQLIDEPage() {
+  const router = useRouter()
+  const starterQueryTemplate = `SELECT * FROM Portfolio.about  -- Shows personal/about information
+SELECT * FORM Portfolio.skills -- Shows technical skills
+SELECT * FROM Portfolio.projects -- Shows portfolio projects
+SELECT * FROM Portfolio.experiences -- Shows internship/work experience
+SELECT * FROM Portfolio.educations  -- Shows education history
+SELECT * FROM Portfolio.Certifications -- Shows certificates and achievements`
   const [showSplash, setShowSplash] = useState(true)
   const [showConnectDialog, setShowConnectDialog] = useState(false)
   const [theme, setTheme] = useState<Theme>("dark")
@@ -55,16 +64,29 @@ export default function SQLIDEPage() {
   ])
   const [activeTabId, setActiveTabId] = useState("1")
   const [isExecuting, setIsExecuting] = useState(false)
-  const [showResults, setShowResults] = useState(false)
-  const [resultData, setResultData] = useState<Record<string, string | number>[] | null>(null)
+  const [tabShowResults, setTabShowResults] = useState<Record<string, boolean>>({})
+  const [tabResultData, setTabResultData] = useState<Record<string, Record<string, string | number>[] | null>>({})
   const [sidebarWidth, setSidebarWidth] = useState(280)
   const [selectedNode, setSelectedNode] = useState<string | null>("server")
-  const [rowCount, setRowCount] = useState(0)
+  const [tabRowCounts, setTabRowCounts] = useState<Record<string, number>>({})
   const [editorZoom, setEditorZoom] = useState(125)
   const [cursor, setCursor] = useState<CursorPosition>({ line: 1, col: 1, ch: 1 })
   const [currentDatabase, setCurrentDatabase] = useState("Portfolio")
+  const [isConnected, setIsConnected] = useState(false)
 
   const activeTab = tabs.find((tab) => tab.id === activeTabId)
+  const showResults = tabShowResults[activeTabId] ?? false
+  const resultData = tabResultData[activeTabId] ?? null
+  const rowCount = tabRowCounts[activeTabId] ?? 0
+
+  const setActiveTabResult = useCallback(
+    (data: Record<string, string | number>[] | null, count: number, visible: boolean) => {
+      setTabResultData((prev) => ({ ...prev, [activeTabId]: data }))
+      setTabRowCounts((prev) => ({ ...prev, [activeTabId]: count }))
+      setTabShowResults((prev) => ({ ...prev, [activeTabId]: visible }))
+    },
+    [activeTabId]
+  )
 
   const handleNewQuery = useCallback(() => {
     const newId = String(Date.now())
@@ -102,159 +124,468 @@ export default function SQLIDEPage() {
     [activeTabId]
   )
 
-  const handleExecute = useCallback(() => {
-    setIsExecuting(true)
-    setShowResults(true)
-    setTimeout(() => {
-      const results = [
-        {
-          OrderID: 1,
-          ProductID: 101,
-          CustomerID: 2,
-          SalesPersonID: 3,
-          OrderDate: "2025-01-01",
-          ShipDate: "2025-01-05",
-          OrderStatus: "Delivered",
-          ShipAddress: "9833 Mt. Dias Blv.",
-          BillAddress: "1226 Shoe St.",
-          Quantity: 1,
-          Sales: 10,
-          CreationTime: "2025-01-01 12:34:56.0000000",
-        },
-        {
-          OrderID: 2,
-          ProductID: 102,
-          CustomerID: 3,
-          SalesPersonID: 3,
-          OrderDate: "2025-01-05",
-          ShipDate: "2025-01-10",
-          OrderStatus: "Shipped",
-          ShipAddress: "250 Race Court",
-          BillAddress: "NULL",
-          Quantity: 1,
-          Sales: 15,
-          CreationTime: "2025-01-05 23:22:04.0000000",
-        },
-        {
-          OrderID: 3,
-          ProductID: 101,
-          CustomerID: 1,
-          SalesPersonID: 5,
-          OrderDate: "2025-01-10",
-          ShipDate: "2025-01-25",
-          OrderStatus: "Delivered",
-          ShipAddress: "8157 W. Book",
-          BillAddress: "8157 W. Book",
-          Quantity: 2,
-          Sales: 20,
-          CreationTime: "2025-01-10 18:24:08.0000000",
-        },
-        {
-          OrderID: 4,
-          ProductID: 105,
-          CustomerID: 1,
-          SalesPersonID: 3,
-          OrderDate: "2025-01-20",
-          ShipDate: "2025-01-25",
-          OrderStatus: "Shipped",
-          ShipAddress: "5724 Victory Lane",
-          BillAddress: "",
-          Quantity: 2,
-          Sales: 60,
-          CreationTime: "2025-01-20 05:50:33.0000000",
-        },
-        {
-          OrderID: 5,
-          ProductID: 104,
-          CustomerID: 2,
-          SalesPersonID: 5,
-          OrderDate: "2025-02-01",
-          ShipDate: "2025-02-05",
-          OrderStatus: "Delivered",
-          ShipAddress: "NULL",
-          BillAddress: "NULL",
-          Quantity: 1,
-          Sales: 25,
-          CreationTime: "2025-02-01 14:02:41.0000000",
-        },
-        {
-          OrderID: 6,
-          ProductID: 104,
-          CustomerID: 3,
-          SalesPersonID: 5,
-          OrderDate: "2025-02-05",
-          ShipDate: "2025-02-10",
-          OrderStatus: "Delivered",
-          ShipAddress: "1792 Belmont Rd.",
-          BillAddress: "NULL",
-          Quantity: 2,
-          Sales: 50,
-          CreationTime: "2025-02-06 15:34:57.0000000",
-        },
-        {
-          OrderID: 7,
-          ProductID: 102,
-          CustomerID: 1,
-          SalesPersonID: 1,
-          OrderDate: "2025-02-15",
-          ShipDate: "2025-02-27",
-          OrderStatus: "Delivered",
-          ShipAddress: "136 Balboa Court",
-          BillAddress: "",
-          Quantity: 2,
-          Sales: 30,
-          CreationTime: "2025-02-16 06:22:01.0000000",
-        },
-        {
-          OrderID: 8,
-          ProductID: 101,
-          CustomerID: 4,
-          SalesPersonID: 3,
-          OrderDate: "2025-02-18",
-          ShipDate: "2025-02-27",
-          OrderStatus: "Shipped",
-          ShipAddress: "2947 Vine Lane",
-          BillAddress: "4311 Clay Rd",
-          Quantity: 3,
-          Sales: 90,
-          CreationTime: "2025-02-18 10:45:22.0000000",
-        },
-        {
-          OrderID: 9,
-          ProductID: 101,
-          CustomerID: 2,
-          SalesPersonID: 3,
-          OrderDate: "2025-03-10",
-          ShipDate: "2025-03-15",
-          OrderStatus: "Shipped",
-          ShipAddress: "3768 Door Way",
-          BillAddress: "",
-          Quantity: 2,
-          Sales: 20,
-          CreationTime: "2025-03-10 12:59:04.0000000",
-        },
-        {
-          OrderID: 10,
-          ProductID: 102,
-          CustomerID: 3,
-          SalesPersonID: 5,
-          OrderDate: "2025-03-15",
-          ShipDate: "2025-03-20",
-          OrderStatus: "Shipped",
-          ShipAddress: "NULL",
-          BillAddress: "NULL",
-          Quantity: 0,
-          Sales: 60,
-          CreationTime: "2025-03-16 23:25:15.0000000",
-        },
-      ]
-      setResultData(results)
-      setRowCount(results.length)
-      setIsExecuting(false)
-    }, 1500)
-  }, [])
+  const handleExecute = useCallback(async () => {
+    const rawSql = (activeTab?.content || "").trim()
+    const normalizedSql = rawSql.replace(/\s+/g, " ").trim()
 
-  const handleSidebarSelect = useCallback((nodeId: string | null) => {
+    try {
+      const toPlainText = (htmlLike: unknown): string => {
+        const raw = typeof htmlLike === "string" ? htmlLike : ""
+        if (!raw.trim()) return "NULL"
+
+        const withLineBreaks = raw
+          .replace(/<\s*\/li\s*>/gi, "\n")
+          .replace(/<\s*li[^>]*>/gi, "")
+          .replace(/<\s*\/ul\s*>/gi, "\n")
+          .replace(/<\s*ul[^>]*>/gi, "\n")
+          .replace(/<\s*\/ol\s*>/gi, "\n")
+          .replace(/<\s*ol[^>]*>/gi, "\n")
+          .replace(/<\s*\/p\s*>/gi, "\n")
+          .replace(/<\s*br\s*\/?\s*>/gi, "\n")
+          .replace(/<\s*p[^>]*>/gi, "")
+
+        const decoded = withLineBreaks
+          .replace(/&nbsp;/gi, " ")
+          .replace(/&amp;/gi, "&")
+          .replace(/&lt;/gi, "<")
+          .replace(/&gt;/gi, ">")
+          .replace(/&#39;/gi, "'")
+          .replace(/&quot;/gi, "\"")
+
+        const noTags = decoded.replace(/<[^>]*>/g, "")
+        const normalized = noTags
+          .replace(/\r/g, "")
+          .replace(/[ \t]*\n[ \t]*/g, "\n")
+          .replace(/\n{3,}/g, "\n\n")
+          .replace(/[ \t]+/g, " ")
+          .split("\n")
+          .map((line) => line.trim())
+          .filter(Boolean)
+          .join("\n")
+          .trim()
+
+        return normalized.length > 0 ? normalized : "NULL"
+      }
+
+      if (!normalizedSql) {
+        setIsExecuting(false)
+        setActiveTabResult(null, 0, false)
+        return
+      }
+      setIsExecuting(true)
+      setTabShowResults((prev) => ({ ...prev, [activeTabId]: true }))
+
+      const correctedSql = normalizedSql.replace(/\bform\b/gi, "FROM")
+      const sqlWithoutTrailingSemicolon = correctedSql.replace(/;\s*$/, "")
+      const statements = sqlWithoutTrailingSemicolon
+        .split(";")
+        .map((s) => s.trim())
+        .filter(Boolean)
+
+      const selectCount = (sqlWithoutTrailingSemicolon.match(/\bselect\b/gi) || []).length
+      if (statements.length > 1 || selectCount > 1) {
+        setActiveTabResult([
+          {
+            Message: "Msg 102, Level 15, State 1, Line 1",
+            Detail: "Only one query is allowed per execution in this SQL editor.",
+            Hint: "Run one SELECT statement at a time in a single query file.",
+          },
+        ], 0, true)
+        return
+      }
+
+      const singleQuery = statements[0] || sqlWithoutTrailingSemicolon
+      const fromMatch = singleQuery.match(/\bfrom\s+([a-zA-Z0-9_.\[\]]+)/i)
+      const typedObject = fromMatch?.[1]?.replace(/[\[\]]/g, "") ?? ""
+      const normalizedObjectRaw = typedObject.toLowerCase()
+      const normalizedObject =
+        normalizedObjectRaw === "portfolio.eductaion" ||
+        normalizedObjectRaw === "dbo.eductaion" ||
+        normalizedObjectRaw === "eductaion" ||
+        normalizedObjectRaw === "portfolio.dbo.eductaion"
+          ? normalizedObjectRaw.replace("eductaion", "education")
+          : normalizedObjectRaw
+      const isAboutQuery = /^(portfolio\.)?(dbo\.)?about$/.test(normalizedObject)
+      const isEducationQuery = /^(portfolio\.)?(dbo\.)?educations$/.test(normalizedObject)
+      const isExperiencesQuery = /^(portfolio\.)?(dbo\.)?experiences$/.test(normalizedObject)
+      const isProjectsQuery = /^(portfolio\.)?(dbo\.)?projects$/.test(normalizedObject)
+      const isCertificationsQuery = /^(portfolio\.)?(dbo\.)?certifications$/.test(normalizedObject)
+      const isSkillsQuery = /^(portfolio\.)?(dbo\.)?skills$/.test(normalizedObject)
+
+      const isSelectAll = /^\s*select\s+\*\s+from\s+/i.test(singleQuery)
+
+      if (!isSelectAll || (!isAboutQuery && !isEducationQuery && !isExperiencesQuery && !isProjectsQuery && !isCertificationsQuery && !isSkillsQuery)) {
+        const invalidName = typedObject || "object"
+        const unsupported = [
+          {
+            Message: "Msg 208, Level 16, State 1, Line 1",
+            Detail: `Invalid object name '${invalidName}'.`,
+          },
+        ]
+        setActiveTabResult(unsupported, 0, true)
+        return
+      }
+
+      if (isAboutQuery) {
+        const { data, error } = await supabase
+          .from("about")
+          .select("profile_picture_url,full_name,dob,role_title,bio_html,email,phone_number,whatsapp_number,location,linkedin_url,github_url,deleted_at")
+          .is("deleted_at", null)
+          .order("updated_at", { ascending: false })
+
+        if (error) {
+          setActiveTabResult([{ Error: error.message }], 1, true)
+          return
+        }
+
+        const rows = (data || []).map((row) => ({
+          image: row.profile_picture_url ?? "",
+          name: row.full_name ?? "",
+          dob: row.dob ?? "",
+          role: row.role_title ?? "",
+          bio: toPlainText(row.bio_html),
+          email: row.email ?? "",
+          phone_number: row.phone_number ?? "",
+          whatsapp_number: row.whatsapp_number ?? "",
+          address: row.location ?? "",
+          linkedin: row.linkedin_url ?? "",
+          github: row.github_url ?? "",
+        }))
+
+        setActiveTabResult(rows, rows.length, true)
+        return
+      }
+
+      if (isProjectsQuery) {
+        const { data, error } = await supabase
+          .from("projects")
+          .select("id,project_title,description_html,github_url,live_url,deleted_at")
+          .is("deleted_at", null)
+          .order("created_at", { ascending: false })
+          .order("updated_at", { ascending: false })
+
+        if (error) {
+          setActiveTabResult([{ Error: error.message }], 1, true)
+          return
+        }
+
+        const projectRows = data || []
+        const projectIds = projectRows.map((r) => r.id).filter(Boolean)
+
+        let imagesByProjectId: Record<string, string[]> = {}
+        let tagsByProjectId: Record<string, string[]> = {}
+
+        if (projectIds.length > 0) {
+          const { data: projectImages } = await supabase
+            .from("project_images")
+            .select("project_id,image_url")
+            .in("project_id", projectIds)
+            .order("sort_order", { ascending: true })
+            .order("created_at", { ascending: true })
+
+          imagesByProjectId = (projectImages || []).reduce<Record<string, string[]>>((acc, item) => {
+            if (!item.project_id || !item.image_url) return acc
+            if (!acc[item.project_id]) acc[item.project_id] = []
+            acc[item.project_id].push(item.image_url)
+            return acc
+          }, {})
+
+          const { data: projectTags } = await supabase
+            .from("project_tags")
+            .select("project_id,tag_name")
+            .in("project_id", projectIds)
+            .order("created_at", { ascending: true })
+
+          tagsByProjectId = (projectTags || []).reduce<Record<string, string[]>>((acc, item) => {
+            if (!item.project_id || !item.tag_name) return acc
+            if (!acc[item.project_id]) acc[item.project_id] = []
+            acc[item.project_id].push(item.tag_name)
+            return acc
+          }, {})
+        }
+
+        const projectResults = projectRows.map((row, idx) => {
+          const liveUrl = typeof row.live_url === "string" ? row.live_url.trim() : ""
+          return {
+          id: idx + 1,
+          image: (imagesByProjectId[row.id] || []).join("||"),
+          project_title: row.project_title ?? "",
+          tech_stack: (tagsByProjectId[row.id] || []).join(", "),
+          description: toPlainText(row.description_html),
+          github_url: row.github_url ?? "",
+          live_url: liveUrl.length > 0 ? liveUrl : "NULL",
+          }
+        })
+
+        setActiveTabResult(projectResults, projectResults.length, true)
+        return
+      }
+
+      if (isCertificationsQuery) {
+        const { data, error } = await supabase
+          .from("certifications")
+          .select("id,certification_title,issuer,issued_date,verification_url,certificate_pdf_url,deleted_at,created_at,updated_at")
+          .is("deleted_at", null)
+          .order("created_at", { ascending: false })
+          .order("updated_at", { ascending: false })
+
+        if (error) {
+          setActiveTabResult([{ Error: error.message }], 1, true)
+          return
+        }
+
+        const rows = (data || []).map((row, index) => ({
+          no: index + 1,
+          certification_title: row.certification_title ?? "",
+          issuer: row.issuer ?? "",
+          issued_date: row.issued_date ?? "NULL",
+          verification_url: (row.verification_url ?? "").trim() || "NULL",
+          certicifate: (row.certificate_pdf_url ?? "").trim() || "NULL",
+        }))
+
+        setActiveTabResult(rows, rows.length, true)
+        return
+      }
+
+      if (isSkillsQuery) {
+        const { data: skillsData, error: skillsError } = await supabase
+          .from("skills")
+          .select("id,category_id,skill_name,sort_order,created_at,deleted_at")
+          .is("deleted_at", null)
+          .order("sort_order", { ascending: true })
+          .order("created_at", { ascending: true })
+
+        if (skillsError) {
+          setActiveTabResult([{ Error: skillsError.message }], 1, true)
+          return
+        }
+
+        const categoryIds = Array.from(new Set((skillsData || []).map((row) => row.category_id).filter(Boolean)))
+        let categoryNameById: Record<string, string> = {}
+        let categoryOrderById: Record<string, number> = {}
+        let categoryCreatedAtById: Record<string, string> = {}
+
+        if (categoryIds.length > 0) {
+          const { data: categoriesData } = await supabase
+            .from("skill_categories")
+            .select("id,category_name,sort_order,created_at")
+            .in("id", categoryIds)
+
+          categoryNameById = (categoriesData || []).reduce<Record<string, string>>((acc, row) => {
+            if (!row.id) return acc
+            acc[row.id] = row.category_name ?? ""
+            return acc
+          }, {})
+
+          categoryOrderById = (categoriesData || []).reduce<Record<string, number>>((acc, row) => {
+            if (!row.id) return acc
+            acc[row.id] = Number(row.sort_order ?? Number.MAX_SAFE_INTEGER)
+            return acc
+          }, {})
+
+          categoryCreatedAtById = (categoriesData || []).reduce<Record<string, string>>((acc, row) => {
+            if (!row.id) return acc
+            acc[row.id] = row.created_at ?? ""
+            return acc
+          }, {})
+        }
+
+        const groupedByCategory = (skillsData || []).reduce<
+          Record<string, { names: string[]; firstCreatedAt: string }>
+        >((acc, row) => {
+          const categoryId = row.category_id || "unknown"
+          if (!acc[categoryId]) {
+            acc[categoryId] = {
+              names: [],
+              firstCreatedAt: row.created_at ?? "",
+            }
+          }
+          if (row.skill_name) {
+            acc[categoryId].names.push(row.skill_name)
+          }
+          return acc
+        }, {})
+
+        const orderedCategoryIds = Object.keys(groupedByCategory).sort((a, b) => {
+          const sortA = categoryOrderById[a] ?? Number.MAX_SAFE_INTEGER
+          const sortB = categoryOrderById[b] ?? Number.MAX_SAFE_INTEGER
+          if (sortA !== sortB) return sortA - sortB
+
+          const createdA = categoryCreatedAtById[a] || groupedByCategory[a]?.firstCreatedAt || ""
+          const createdB = categoryCreatedAtById[b] || groupedByCategory[b]?.firstCreatedAt || ""
+          if (createdA && createdB && createdA !== createdB) return createdA.localeCompare(createdB)
+
+          return (categoryNameById[a] ?? "").localeCompare(categoryNameById[b] ?? "")
+        })
+
+        const rows = orderedCategoryIds.map((categoryId, index) => ({
+          id: index + 1,
+          category: categoryNameById[categoryId] ?? "",
+          skills: groupedByCategory[categoryId].names.join(", "),
+        }))
+
+        setActiveTabResult(rows, rows.length, true)
+        return
+      }
+
+      if (isExperiencesQuery) {
+        const { data: expData, error: expError } = await supabase
+          .from("experience")
+          .select("id,company_name,company_website_url,location,role,description_html,start_month,start_year,end_month,end_year,sort_order,created_at,deleted_at")
+          .is("deleted_at", null)
+          .order("sort_order", { ascending: true })
+          .order("created_at", { ascending: true })
+
+        if (expError) {
+          setActiveTabResult([{ Error: expError.message }], 1, true)
+          return
+        }
+
+        const experienceRows = expData || []
+        const experienceIds = experienceRows.map((r) => r.id).filter(Boolean)
+
+        let mediaByExperienceId: Record<string, string[]> = {}
+        if (experienceIds.length > 0) {
+          const { data: mediaData } = await supabase
+            .from("experience_media")
+            .select("experience_id,file_url")
+            .in("experience_id", experienceIds)
+            .order("sort_order", { ascending: true })
+            .order("created_at", { ascending: true })
+
+          mediaByExperienceId = (mediaData || []).reduce<Record<string, string[]>>((acc, m) => {
+            if (!m.experience_id || !m.file_url) return acc
+            if (!acc[m.experience_id]) acc[m.experience_id] = []
+            acc[m.experience_id].push(m.file_url)
+            return acc
+          }, {})
+        }
+
+        const monthRank: Record<string, number> = {
+          january: 1, february: 2, march: 3, april: 4, may: 5, june: 6,
+          july: 7, august: 8, september: 9, october: 10, november: 11, december: 12,
+        }
+
+        const rows = experienceRows.map((row) => {
+          const startDate = [row.start_month, row.start_year].filter(Boolean).join(", ")
+          const endDate = [row.end_month, row.end_year].filter(Boolean).join(", ")
+          const endYearNum = Number(row.end_year ?? 0)
+          const endMonthNum = monthRank[String(row.end_month ?? "").toLowerCase()] ?? 0
+          const endSortKey = endYearNum * 100 + endMonthNum
+
+          return {
+            __endSortKey: endSortKey,
+            image: (mediaByExperienceId[row.id] || []).join("||"),
+            company_name: row.company_name ?? "",
+            company_website: row.company_website_url ?? "",
+            location: row.location ?? "",
+            role: row.role ?? "",
+            description: toPlainText(row.description_html),
+            start_date: startDate || "NULL",
+            end_date: endDate || "NULL",
+          }
+        })
+
+        const sortedRows = rows
+          .sort((a, b) => b.__endSortKey - a.__endSortKey)
+          .map((row, index) => ({
+            id: index + 1,
+            image: row.image,
+            company_name: row.company_name,
+            company_website: row.company_website,
+            location: row.location,
+            role: row.role,
+            description: row.description,
+            start_date: row.start_date,
+            end_date: row.end_date,
+          }))
+
+        setActiveTabResult(sortedRows, sortedRows.length, true)
+        return
+      }
+
+      const { data, error } = await supabase
+        .from("education")
+        .select("id,school_college,institution_website_url,degree,score_type,score_value,start_month,start_year,end_month,end_year,description_html,deleted_at")
+        .is("deleted_at", null)
+        .order("sort_order", { ascending: true })
+        .order("created_at", { ascending: true })
+
+      if (error) {
+        setActiveTabResult([{ Error: error.message }], 1, true)
+        return
+      }
+
+      const educationRows = data || []
+      const educationIds = educationRows.map((r) => r.id).filter(Boolean)
+
+      let mediaByEducationId: Record<string, string[]> = {}
+      if (educationIds.length > 0) {
+        const { data: mediaData } = await supabase
+          .from("education_media")
+          .select("education_id,file_url")
+          .in("education_id", educationIds)
+          .order("sort_order", { ascending: true })
+          .order("created_at", { ascending: true })
+
+        mediaByEducationId = (mediaData || []).reduce<Record<string, string[]>>((acc, m) => {
+          if (!m.education_id || !m.file_url) return acc
+          if (!acc[m.education_id]) acc[m.education_id] = []
+          acc[m.education_id].push(m.file_url)
+          return acc
+        }, {})
+      }
+
+      const formattedEducation = educationRows.map((row, index) => {
+        const images = mediaByEducationId[row.id] || []
+        const start = [row.start_month, row.start_year].filter(Boolean).join(", ")
+        const end = [row.end_month, row.end_year].filter(Boolean).join(", ")
+        const descriptionText = toPlainText(row.description_html)
+
+        const monthRank: Record<string, number> = {
+          january: 1, february: 2, march: 3, april: 4, may: 5, june: 6,
+          july: 7, august: 8, september: 9, october: 10, november: 11, december: 12,
+        }
+        const endYearNum = Number(row.end_year ?? 0)
+        const endMonthNum = monthRank[String(row.end_month ?? "").toLowerCase()] ?? 0
+        const endSortKey = endYearNum * 100 + endMonthNum
+
+        return {
+          __endSortKey: endSortKey,
+          image: images.join("||"),
+          degree: row.degree ?? "",
+          institute_name: row.school_college ?? "",
+          institute_link: row.institution_website_url ?? "",
+          result: [row.score_type, row.score_value].filter(Boolean).join(": "),
+          starting: start,
+          ending: end,
+          description: descriptionText,
+        }
+      })
+      const sortedEducation = formattedEducation
+        .sort((a, b) => b.__endSortKey - a.__endSortKey)
+        .map((row, idx) => ({
+          id: idx + 1,
+          image: row.image,
+          degree: row.degree,
+          institute_name: row.institute_name,
+          institute_link: row.institute_link,
+          result: row.result,
+          starting: row.starting,
+          ending: row.ending,
+          description: row.description,
+        }))
+
+      setActiveTabResult(sortedEducation, sortedEducation.length, true)
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Unknown execution error"
+      setActiveTabResult([{ Error: msg }], 1, true)
+    } finally {
+      setIsExecuting(false)
+    }
+  }, [activeTab?.content, activeTabId, setActiveTabResult])
+
+  const handleSidebarSelect = useCallback((nodeId: string | null, _query?: string) => {
     setSelectedNode(nodeId)
     setFocusArea("sidebar")
   }, [])
@@ -267,6 +598,10 @@ export default function SQLIDEPage() {
   const handleCursorChange = useCallback((nextCursor: CursorPosition) => {
     setCursor(nextCursor)
   }, [])
+
+  const handleOptionsRedirect = useCallback(() => {
+    router.push("/admin")
+  }, [router])
 
   const isDark = theme === "dark"
 
@@ -282,10 +617,13 @@ export default function SQLIDEPage() {
       )}
       {showConnectDialog && (
         <ConnectDialog
-          onConnect={() => setShowConnectDialog(false)}
+          onConnect={() => {
+            setIsConnected(true)
+            setShowConnectDialog(false)
+          }}
           onCancel={() => {}}
           onHelp={() => {}}
-          onOptions={() => {}}
+          onOptions={handleOptionsRedirect}
         />
       )}
       <div
@@ -326,13 +664,16 @@ export default function SQLIDEPage() {
                   zoom={editorZoom}
                   onZoomChange={handleZoomChange}
                   onCursorChange={handleCursorChange}
-                  showPlaceholder={activeTabId === "1"}
+                  showPlaceholder={activeTabId === "1" && isConnected}
+                  placeholderText={starterQueryTemplate}
                 />
                 {showResults && (
                   <ResultsPanel
                     data={resultData}
                     isLoading={isExecuting}
-                    onClose={() => setShowResults(false)}
+                    onClose={() =>
+                      setTabShowResults((prev) => ({ ...prev, [activeTabId]: false }))
+                    }
                   />
                 )}
               </div>

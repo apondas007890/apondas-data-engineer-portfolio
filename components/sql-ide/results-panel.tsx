@@ -49,12 +49,24 @@ export function ResultsPanel({ data, isLoading, onClose }: ResultsPanelProps) {
   const [hasColumnSelection, setHasColumnSelection] = useState(false)
   const [panelHeight, setPanelHeight] = useState(180)
   const [isResizing, setIsResizing] = useState(false)
+  const [previewImages, setPreviewImages] = useState<string[] | null>(null)
+  const [previewIndex, setPreviewIndex] = useState(0)
+  const [slideshowTick, setSlideshowTick] = useState(0)
   const columns = data && data.length > 0 ? Object.keys(data[0]) : []
   const rowTotal = data?.length ?? 0
+  const sqlErrorMessage = data?.[0]?.Message
+  const sqlErrorDetail = data?.[0]?.Detail
+  const hasSqlError = typeof sqlErrorMessage === "string" && sqlErrorMessage.startsWith("Msg ")
   const completionTime = useMemo(() => new Date().toISOString(), [data, isLoading])
   const showResultsGridFrame = isDark && activeTab === "results" && resultView === "grid"
   const showMessagesFrame = isDark && activeTab === "messages"
   const showResultsTextFrame = isDark && activeTab === "results" && resultView === "vertical"
+
+  useEffect(() => {
+    if (hasSqlError) {
+      setActiveTab("messages")
+    }
+  }, [hasSqlError])
 
   useEffect(() => {
     if (!data || data.length === 0) {
@@ -83,6 +95,21 @@ export function ResultsPanel({ data, isLoading, onClose }: ResultsPanelProps) {
       document.body.style.cursor = prevCursor
     }
   }, [isResizing])
+
+  useEffect(() => {
+    if (!previewImages || previewImages.length <= 1) return
+    const timer = setInterval(() => {
+      setPreviewIndex((prev) => (prev + 1) % previewImages.length)
+    }, 1800)
+    return () => clearInterval(timer)
+  }, [previewImages])
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setSlideshowTick((prev) => prev + 1)
+    }, 1800)
+    return () => clearInterval(timer)
+  }, [])
 
   const handleMouseDown = () => {
     setIsResizing(true)
@@ -166,6 +193,7 @@ export function ResultsPanel({ data, isLoading, onClose }: ResultsPanelProps) {
             style={{ backgroundColor: showResultsGridFrame ? "#2d2d30" : "#3a3a3c" }}
           />
         )}
+        {!hasSqlError && (
         <button
           className={`relative z-10 flex h-[22px] select-none items-center gap-1 border px-2 text-[11px] ${
             !isDark && activeTab === "results" && resultView === "grid"
@@ -189,6 +217,7 @@ export function ResultsPanel({ data, isLoading, onClose }: ResultsPanelProps) {
           <ResultsGridIcon />
           Results (Grid)
         </button>
+        )}
         <button
           className={`relative z-10 flex h-[22px] select-none items-center gap-1 border border-l-0 px-2 text-[11px] ${
             !isDark && activeTab === "messages"
@@ -203,6 +232,7 @@ export function ResultsPanel({ data, isLoading, onClose }: ResultsPanelProps) {
           <MessagesIcon />
           Messages
         </button>
+        {!hasSqlError && (
         <button
           className={`relative z-10 flex h-[22px] select-none items-center gap-1 border border-l-0 px-2 text-[11px] ${
             resultView === "vertical"
@@ -228,6 +258,7 @@ export function ResultsPanel({ data, isLoading, onClose }: ResultsPanelProps) {
           <VerticalShowIcon />
           <span>Results (Text)</span>
         </button>
+        )}
         <div className="flex-1" />
         <button
           onClick={onClose}
@@ -261,17 +292,7 @@ export function ResultsPanel({ data, isLoading, onClose }: ResultsPanelProps) {
           style={
             isDark
               ? showResultsGridFrame
-                ? {
-                    borderStyle: "solid",
-                    borderTopWidth: "1px",
-                    borderRightWidth: "1px",
-                    borderBottomWidth: "1px",
-                    borderLeftWidth: "1px",
-                    borderTopColor: "#787a7e",
-                    borderRightColor: "#787a7e",
-                    borderBottomColor: "#787a7e",
-                    borderLeftColor: "#787a7e",
-                  }
+                ? undefined
                 : showMessagesFrame
                   ? {
                       borderStyle: "solid",
@@ -406,36 +427,140 @@ export function ResultsPanel({ data, isLoading, onClose }: ResultsPanelProps) {
                             style={(() => {
                               const cellValue = String(row[col])
                               const isNullLike = cellValue === "NULL"
+                              const normalizedCol = col.toLowerCase()
+                              const isBioColumn = normalizedCol === "bio" || normalizedCol === "description"
+                              const baseCellStyle = isBioColumn
+                                ? {
+                                    whiteSpace: "pre-line" as const,
+                                    maxWidth: "300px",
+                                    minWidth: "180px",
+                                    lineHeight: "16px",
+                                    verticalAlign: "top" as const,
+                                    paddingTop: "2px",
+                                    paddingBottom: "2px",
+                                    wordBreak: "break-word" as const,
+                                  }
+                                : {}
 
                               if (colIndex === selectedCol && hasColumnSelection) {
                                 return isDark
-                                  ? { backgroundColor: "#6767ab", color: "#ffffff", lineHeight: "20px", borderColor: "#69696a" }
-                                  : { backgroundColor: "#ececff", lineHeight: "20px" }
+                                  ? { ...baseCellStyle, backgroundColor: "#6767ab", color: "#ffffff", lineHeight: isBioColumn ? "16px" : "20px", borderColor: "#69696a" }
+                                  : { ...baseCellStyle, backgroundColor: "#ececff", lineHeight: isBioColumn ? "16px" : "20px" }
                               }
 
                               if (rowIndex === selectedRow && hasRowSelection) {
                                 return isDark
-                                  ? { backgroundColor: "#6767ab", color: "#ffffff", lineHeight: "20px", borderColor: "#69696a" }
-                                  : { backgroundColor: "#ececff", lineHeight: "20px" }
+                                  ? { ...baseCellStyle, backgroundColor: "#6767ab", color: "#ffffff", lineHeight: isBioColumn ? "16px" : "20px", borderColor: "#69696a" }
+                                  : { ...baseCellStyle, backgroundColor: "#ececff", lineHeight: isBioColumn ? "16px" : "20px" }
                               }
 
                               if (rowIndex === selectedRow && colIndex === selectedCol) {
                                 const selectedColor = hasCellSelection ? "#6767ab" : "#333355"
                                 return isDark
-                                  ? { backgroundColor: selectedColor, color: "#ffffff", lineHeight: "20px", borderColor: "#69696a" }
-                                  : { backgroundColor: "#ececff", lineHeight: "20px" }
+                                  ? { ...baseCellStyle, backgroundColor: selectedColor, color: "#ffffff", lineHeight: isBioColumn ? "16px" : "20px", borderColor: "#69696a" }
+                                  : { ...baseCellStyle, backgroundColor: "#ececff", lineHeight: isBioColumn ? "16px" : "20px" }
                               }
 
                               if (isNullLike) {
                                 return isDark
-                                  ? { backgroundColor: "#333355", color: "#f0f0f0", lineHeight: "20px", borderColor: "#69696a" }
-                                  : { backgroundColor: "#ececff", lineHeight: "20px" }
+                                  ? { ...baseCellStyle, backgroundColor: "#333355", color: "#f0f0f0", lineHeight: isBioColumn ? "16px" : "20px", borderColor: "#69696a" }
+                                  : { ...baseCellStyle, backgroundColor: "#ececff", lineHeight: isBioColumn ? "16px" : "20px" }
                               }
 
-                              return isDark ? { lineHeight: "20px", borderColor: "#69696a" } : { lineHeight: "20px" }
+                              return isDark
+                                ? { ...baseCellStyle, lineHeight: isBioColumn ? "16px" : "20px", borderColor: "#69696a" }
+                                : { ...baseCellStyle, lineHeight: isBioColumn ? "16px" : "20px" }
                             })()}
                           >
-                            {String(row[col])}
+                            {(() => {
+                              const key = col.toLowerCase()
+                              const value = String(row[col]).trim()
+                              const isLinkField =
+                                key === "linkedin" ||
+                                key === "github" ||
+                                key === "institute_link" ||
+                                key === "company_website" ||
+                                key === "company_website_url" ||
+                                key === "githublink" ||
+                                key === "liveurl" ||
+                                key === "github_url" ||
+                                key === "live_url" ||
+                                key === "verification_url" ||
+                                key === "certicifate(pdf)" ||
+                                key === "certicifate"
+                              const isWhatsAppField = key === "whatsapp_number"
+
+                              if (key === "image" && value) {
+                                const images = value.split("||").map((v) => v.trim()).filter(Boolean)
+                                return (
+                                  <button
+                                    type="button"
+                                    className="text-[#4aa7ff] underline hover:text-[#78beff]"
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      setPreviewImages(images)
+                                      setPreviewIndex(0)
+                                    }}
+                                  >
+                                    image
+                                  </button>
+                                )
+                              }
+
+                              if (isLinkField && value && value !== "NULL") {
+                                const isInstituteLink = key === "institute_link"
+                                const linkLabel =
+                                  key === "certicifate"
+                                    ? "pdf"
+                                    : key === "verification_url"
+                                      ? "verify"
+                                      : value
+                                return (
+                                  <a
+                                    href={value}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="text-[#4aa7ff] underline hover:text-[#78beff]"
+                                    style={
+                                      isInstituteLink
+                                        ? {
+                                            display: "inline-block",
+                                            maxWidth: "280px",
+                                            whiteSpace: "nowrap",
+                                            overflow: "hidden",
+                                            textOverflow: "ellipsis",
+                                            verticalAlign: "bottom",
+                                          }
+                                        : undefined
+                                    }
+                                    title={value}
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    {linkLabel}
+                                  </a>
+                                )
+                              }
+
+                              if (isWhatsAppField && value) {
+                                const whatsappHref = value.startsWith("http")
+                                  ? value
+                                  : `https://wa.me/${value.replace(/[^\d]/g, "")}`
+
+                                return (
+                                  <a
+                                    href={whatsappHref}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="text-[#25D366] underline hover:text-[#46e07f]"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    {value}
+                                  </a>
+                                )
+                              }
+
+                              return value
+                            })()}
                           </td>
                         ))}
                       </tr>
@@ -458,6 +583,22 @@ export function ResultsPanel({ data, isLoading, onClose }: ResultsPanelProps) {
                       const rawValue = row[col]
                       const value = String(rawValue)
                       const isNullLike = value === "NULL"
+                      const key = col.toLowerCase()
+                              const isImage = key === "image"
+                      const isGitOrLinked =
+                        key === "github" ||
+                        key === "linkedin" ||
+                        key === "institute_link" ||
+                        key === "company_website" ||
+                        key === "company_website_url" ||
+                        key === "githublink" ||
+                        key === "liveurl" ||
+                        key === "github_url" ||
+                        key === "live_url" ||
+                        key === "verification_url" ||
+                        key === "certicifate(pdf)" ||
+                        key === "certicifate"
+                      const isWhatsApp = key === "whatsapp_number"
 
                       return (
                         <div key={`${rowIndex}-${col}`} className="grid grid-cols-[136px_minmax(0,1fr)] gap-x-4">
@@ -471,7 +612,52 @@ export function ResultsPanel({ data, isLoading, onClose }: ResultsPanelProps) {
                                   : undefined
                             }
                           >
-                            {value}
+                            {isImage && value ? (
+                              (() => {
+                                const images = value.split("||").map((v) => v.trim()).filter(Boolean)
+                                const thumb = images.length > 0 ? images[slideshowTick % images.length] : ""
+                                if (!thumb) return null
+                                return (
+                              <button
+                                type="button"
+                                className="inline-block rounded border border-white/20 p-1 hover:border-white/40"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  setPreviewImages(images)
+                                  setPreviewIndex(0)
+                                }}
+                              >
+                                <img
+                                  src={thumb}
+                                  alt="profile"
+                                  className="h-[132px] w-[104px] rounded object-cover"
+                                />
+                              </button>
+                                )
+                              })()
+                            ) : isGitOrLinked && value && value !== "NULL" ? (
+                              <a
+                                href={value}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-[#4aa7ff] underline hover:text-[#78beff]"
+                              >
+                                {key === "certicifate" ? "pdf" : key === "verification_url" ? "verify" : value}
+                              </a>
+                            ) : isWhatsApp && value ? (
+                              <a
+                                href={value.startsWith("http") ? value : `https://wa.me/${value.replace(/[^\d]/g, "")}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-[#25D366] underline hover:text-[#46e07f]"
+                              >
+                                {value}
+                              </a>
+                            ) : (
+                              <span style={{ whiteSpace: key === "description" || key === "bio" ? "pre-line" : "normal" }}>
+                                {value}
+                              </span>
+                            )}
                           </span>
                         </div>
                       )
@@ -496,11 +682,26 @@ export function ResultsPanel({ data, isLoading, onClose }: ResultsPanelProps) {
               <span className={isDark ? "text-[#888888]" : "text-[#666666]"}>Executing...</span>
             ) : data ? (
               <div className="space-y-5">
-                <div className={isDark ? "text-[#d4d4d4]" : "text-[#333333]"}>{`(${rowTotal} rows returned)`}</div>
-                <div>
-                  <span className={isDark ? "text-[#d4d4d4]" : "text-[#333333]"}>Execution time: </span>
-                  <span className={isDark ? "text-[#d4d4d4]" : "text-[#333333]"}>{completionTime}</span>
-                </div>
+                {hasSqlError ? (
+                  <>
+                    <div className="space-y-1">
+                      <div className="text-[#ff5f56]">{sqlErrorMessage}</div>
+                      {typeof sqlErrorDetail === "string" ? <div className="text-[#ff5f56]">{sqlErrorDetail}</div> : null}
+                    </div>
+                    <div>
+                      <span className={isDark ? "text-[#d4d4d4]" : "text-[#333333]"}>Completion time: </span>
+                      <span className={isDark ? "text-[#d4d4d4]" : "text-[#333333]"}>{completionTime}</span>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className={isDark ? "text-[#d4d4d4]" : "text-[#333333]"}>{`(${rowTotal} rows returned)`}</div>
+                    <div>
+                      <span className={isDark ? "text-[#d4d4d4]" : "text-[#333333]"}>Execution time: </span>
+                      <span className={isDark ? "text-[#d4d4d4]" : "text-[#333333]"}>{completionTime}</span>
+                    </div>
+                  </>
+                )}
               </div>
             ) : (
               <span className={isDark ? "text-[#888888]" : "text-[#666666]"}>Ready</span>
@@ -509,6 +710,18 @@ export function ResultsPanel({ data, isLoading, onClose }: ResultsPanelProps) {
         )}
         </div>
       </div>
+      {previewImages && previewImages.length > 0 && (
+        <div
+          className="absolute inset-0 z-50 flex items-center justify-center bg-black/75"
+          onClick={() => setPreviewImages(null)}
+        >
+          <img
+            src={previewImages[previewIndex]}
+            alt="preview"
+            className="max-h-[80vh] max-w-[80vw] rounded-lg border border-white/20 object-contain shadow-2xl"
+          />
+        </div>
+      )}
       <style jsx global>{`
         .ssms-results-scroll::-webkit-scrollbar {
           width: 8px;

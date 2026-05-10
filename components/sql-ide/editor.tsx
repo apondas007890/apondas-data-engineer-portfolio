@@ -11,6 +11,7 @@ interface EditorProps {
   onZoomChange: (zoom: number) => void
   onCursorChange: (cursor: CursorPosition) => void
   showPlaceholder?: boolean
+  placeholderText?: string
 }
 
 const SQL_KEYWORDS = [
@@ -61,6 +62,7 @@ const SQL_KEYWORDS = [
   "DROP",
   "WHERE",
   "FROM",
+  "FORM",
   "THEN",
   "ELSE",
   "CASE",
@@ -239,7 +241,15 @@ const renderHighlightedSql = (text: string) => {
   return segments
 }
 
-export function Editor({ content, onChange, zoom, onZoomChange, onCursorChange, showPlaceholder = false }: EditorProps) {
+export function Editor({
+  content,
+  onChange,
+  zoom,
+  onZoomChange,
+  onCursorChange,
+  showPlaceholder = false,
+  placeholderText = "Start your query here...",
+}: EditorProps) {
   const { theme } = useTheme()
   const isDark = theme === "dark"
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -492,19 +502,18 @@ export function Editor({ content, onChange, zoom, onZoomChange, onCursorChange, 
         )}
         {showPlaceholder && isEmpty && (
           <div
-            className={`pointer-events-none absolute flex items-center font-mono ${
+            className={`pointer-events-none absolute font-mono whitespace-pre ${
               isDark ? "text-[#858585]" : "text-[#6b6b6b]"
             }`}
             style={{
               zIndex: 25,
-              top: `${rowVisualTop + (Math.max(activeLine, 1) - 1) * lineHeight - scrollTop}px`,
+              top: `${rowVisualTop - scrollTop}px`,
               left: `${editorTextPaddingLeft - scrollLeft}px`,
-              height: `${rowBoxHeight}px`,
               fontSize: `${fontSize}px`,
               lineHeight: `${textLineHeight}px`,
             }}
           >
-            Start your query here...
+            {placeholderText}
           </div>
         )}
         <div
