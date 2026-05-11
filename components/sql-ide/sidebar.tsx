@@ -2154,7 +2154,6 @@ export function Sidebar({ width, onWidthChange, selectedNode, onSelectNode }: Si
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isPinned, setIsPinned] = useState(true)
   const [isVisible, setIsVisible] = useState(true)
-  const [searchText, setSearchText] = useState("")
 
   // hsl(240, 25%, 42%) for focused sidebar header
   const focusedColor = "hsl(240, 25%, 42%)"
@@ -2210,25 +2209,6 @@ export function Sidebar({ width, onWidthChange, selectedNode, onSelectNode }: Si
     if (node.iconType === "procedure") return `EXEC ${node.label};`
     return undefined
   }
-
-  const nodeMatches = (node: TreeNode, term: string): boolean => {
-    if (!term) return true
-    const normalized = term.toLowerCase()
-    const selfMatch =
-      node.label.toLowerCase().includes(normalized) ||
-      (node.dataType?.toLowerCase().includes(normalized) ?? false)
-    if (selfMatch) return true
-    if (!node.children?.length) return false
-    return node.children.some((child) => nodeMatches(child, term))
-  }
-
-  const filterNodes = (nodes: TreeNode[], term: string): TreeNode[] =>
-    nodes
-      .filter((node) => nodeMatches(node, term))
-      .map((node) => ({
-        ...node,
-        children: node.children ? filterNodes(node.children, term) : undefined,
-      }))
 
   const renderTree = (nodes: TreeNode[], depth = 0) => {
     return nodes.map((node) => {
@@ -2335,7 +2315,7 @@ export function Sidebar({ width, onWidthChange, selectedNode, onSelectNode }: Si
               : undefined
           }
         >
-          <div className="pointer-events-none absolute left-[102px] right-[48px] top-1/2 z-0 flex h-[7px] -translate-y-1/2 flex-col justify-between">
+          <div className="pointer-events-none absolute left-[102px] right-[72px] top-1/2 z-0 flex h-[7px] -translate-y-1/2 flex-col justify-between">
             <div className="h-px bg-repeat-x" style={{ backgroundImage: "radial-gradient(circle, #626267 0.75px, transparent 0.95px)", backgroundSize: "6px 1px" }} />
             <div className="ml-[3px] h-px bg-repeat-x" style={{ backgroundImage: "radial-gradient(circle, #626267 0.75px, transparent 0.95px)", backgroundSize: "6px 1px" }} />
             <div className="h-px bg-repeat-x" style={{ backgroundImage: "radial-gradient(circle, #626267 0.75px, transparent 0.95px)", backgroundSize: "6px 1px" }} />
@@ -2473,22 +2453,6 @@ export function Sidebar({ width, onWidthChange, selectedNode, onSelectNode }: Si
         </div>
         )}
 
-        {/* Tree View - with custom scrollbar */}
-        {!isCollapsed && (
-        <div className={`px-1 pb-1 pt-1 ${isDark ? "bg-[#1e1e1e]" : "bg-white"}`}>
-          <input
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            placeholder="Search objects..."
-            className={`h-6 w-full border px-2 text-[11px] outline-none ${
-              isDark
-                ? "border-[#3a3a3a] bg-[#252526] text-[#d4d4d4] placeholder:text-[#8b8b8b]"
-                : "border-[#d0d0d0] bg-white text-[#222222] placeholder:text-[#888888]"
-            }`}
-          />
-        </div>
-        )}
-
         {!isCollapsed && (
         <div
           className={`object-explorer-tree flex-1 overflow-auto ${isDark ? "ssms-scrollbar-dark bg-[#1e1e1e]" : "ssms-scrollbar-light bg-white"}`}
@@ -2497,7 +2461,7 @@ export function Sidebar({ width, onWidthChange, selectedNode, onSelectNode }: Si
             scrollbarColor: isDark ? "#4a4a4a #252526" : "#c0c0c0 #f3f3f3",
           }}
         >
-          {renderTree(filterNodes(treeData, searchText.trim()))}
+          {renderTree(treeData)}
         </div>
         )}
 

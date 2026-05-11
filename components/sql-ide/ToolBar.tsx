@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
+import { AnimatePresence, motion } from "motion/react"
 import { useTheme } from "@/app/page"
 import { supabase } from "@/src/lib/supabase/client"
 
@@ -680,6 +681,10 @@ function SqlShadesRow() {
     message: false,
   })
   const [contactSubmitted, setContactSubmitted] = useState(false)
+  const [isContactSending, setIsContactSending] = useState(false)
+  const [contactNextUrl, setContactNextUrl] = useState("")
+  const [contactFormUrl, setContactFormUrl] = useState("")
+  const [contactToast, setContactToast] = useState<{ type: "success" | "error"; message: string } | null>(null)
   const commandGuide = [
     {
       command: "SELECT * FROM Portfolio.about;",
@@ -794,6 +799,21 @@ function SqlShadesRow() {
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [isContactOpen])
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setContactNextUrl(`${window.location.origin}?contact=success`)
+      setContactFormUrl(window.location.href)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!contactToast) return
+    const timer = window.setTimeout(() => {
+      setContactToast(null)
+    }, 3000)
+    return () => window.clearTimeout(timer)
+  }, [contactToast])
+
   const closeContact = () => setIsContactOpen(false)
   const shouldShowError = (field: "name" | "email" | "message", value: string, error: string) =>
     Boolean(error) && (contactSubmitted || contactTouched[field] || value.trim().length > 0)
@@ -804,6 +824,58 @@ function SqlShadesRow() {
     setContactMessage("")
     setContactTouched({ name: false, email: false, message: false })
     setContactSubmitted(false)
+    setIsContactSending(false)
+  }
+
+  const handleContactSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setContactSubmitted(true)
+    setContactTouched({ name: true, email: true, message: true })
+    setContactToast(null)
+
+    if (!validation.isValid || isContactSending) return
+
+    try {
+      setIsContactSending(true)
+
+      const formData = new FormData()
+      formData.append("name", contactName.trim())
+      formData.append("email", contactEmail.trim())
+      formData.append("message", contactMessage.trim())
+      formData.append("_subject", "New message from SSMS Portfolio")
+      formData.append("_template", "table")
+      formData.append("_captcha", "true")
+      formData.append("_replyto", contactEmail.trim())
+      formData.append("_honey", "")
+      if (contactNextUrl) formData.append("_next", contactNextUrl)
+      if (contactFormUrl) formData.append("_url", contactFormUrl)
+
+      const response = await fetch("https://formsubmit.co/ajax/apondas007890@gmail.com", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+        },
+        body: formData,
+      })
+
+      if (!response.ok) {
+        throw new Error("FormSubmit request failed")
+      }
+
+      resetContactState()
+      setIsContactOpen(false)
+      setContactToast({
+        type: "success",
+        message: "Message sent successfully. I’ll reply soon.",
+      })
+    } catch (_error) {
+      setContactToast({
+        type: "error",
+        message: "Message failed to send. Please try again.",
+      })
+    } finally {
+      setIsContactSending(false)
+    }
   }
 
   const handleResumeOpen = async () => {
@@ -930,7 +1002,6 @@ function SqlShadesRow() {
               onClick={
                 label === "Contact"
                   ? () => {
-                      resetContactState()
                       setIsContactOpen(true)
                     }
                   : label === "Resume"
@@ -969,15 +1040,32 @@ function SqlShadesRow() {
                 ×
               </button>
             </div>
-            <div className="bg-[#252526] px-[14px] py-[14px] text-[12px] text-[#d4d4d4]">
+            <form
+              action="https://formsubmit.co/apondas007890@gmail.com"
+              method="POST"
+              className="bg-[#252526] px-[14px] py-[14px] text-[12px] text-[#d4d4d4]"
+              onSubmit={handleContactSubmit}
+            >
+              {/* First FormSubmit submission may require email confirmation. */}
+              <input type="hidden" name="_subject" value="New message from SSMS Portfolio" />
+              <input type="hidden" name="_template" value="table" />
+              <input type="hidden" name="_captcha" value="true" />
+              <input type="hidden" name="_replyto" value={contactEmail.trim()} />
+              <input type="hidden" name="_next" value={contactNextUrl} />
+              <input type="hidden" name="_url" value={contactFormUrl} />
+              <input type="text" name="_honey" style={{ display: "none" }} tabIndex={-1} autoComplete="off" />
+
               <div className="mb-[10px] text-[12px] leading-[18px] text-[#bfc0c3]">
-                Send a message through the SSMS-style contact form. We’ll keep it compact and clean.
+                Have a question, feedback, or opportunity? Send a message here, and I’ll do my best to reply as soon as possible.
               </div>
 
               <div className="space-y-[10px]">
                 <div>
-                  <label className="mb-[4px] block text-[12px] text-[#d4d4d4]">Name</label>
+                  <label htmlFor="ssms-contact-name" className="mb-[4px] block text-[12px] text-[#d4d4d4]">Name</label>
                   <input
+                    id="ssms-contact-name"
+                    name="name"
+                    required
                     placeholder="Enter your name"
                     value={contactName}
                     onChange={(event) => setContactName(event.target.value)}
@@ -1002,8 +1090,12 @@ function SqlShadesRow() {
                 </div>
 
                 <div>
-                  <label className="mb-[4px] block text-[12px] text-[#d4d4d4]">Email</label>
+                  <label htmlFor="ssms-contact-email" className="mb-[4px] block text-[12px] text-[#d4d4d4]">Email</label>
                   <input
+                    id="ssms-contact-email"
+                    name="email"
+                    type="email"
+                    required
                     placeholder="Enter your email address"
                     value={contactEmail}
                     onChange={(event) => setContactEmail(event.target.value.replace(/^\s+|\s+$/g, ""))}
@@ -1033,8 +1125,11 @@ function SqlShadesRow() {
                 </div>
 
                 <div>
-                  <label className="mb-[4px] block text-[12px] text-[#d4d4d4]">Message</label>
+                  <label htmlFor="ssms-contact-message" className="mb-[4px] block text-[12px] text-[#d4d4d4]">Message</label>
                   <textarea
+                    id="ssms-contact-message"
+                    name="message"
+                    required
                     placeholder="Write your message here..."
                     value={contactMessage}
                     onChange={(event) => setContactMessage(event.target.value)}
@@ -1069,22 +1164,42 @@ function SqlShadesRow() {
                   Cancel
                 </button>
                 <button
-                  type="button"
-                  onClick={() => setContactSubmitted(true)}
-                  disabled={!validation.isValid}
+                  type="submit"
+                  disabled={!validation.isValid || isContactSending}
                   className={`h-[28px] border px-3 text-[12px] ${
-                    validation.isValid
+                    validation.isValid && !isContactSending
                       ? "border-[#f0e68c] bg-[#6f5d1e] text-white hover:bg-[#857028]"
                       : "cursor-not-allowed border-[#4a4a4a] bg-[#2f3035] text-[#767676] opacity-75"
                   }`}
                 >
-                  Submit
+                  {isContactSending ? "Sending..." : "Submit"}
                 </button>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       ) : null}
+      <AnimatePresence>
+        {contactToast ? (
+          <motion.div
+            key="contact-toast"
+            initial={{ opacity: 0, x: 80 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 80 }}
+            transition={{ duration: 0.28, ease: "easeOut" }}
+            className={`fixed right-4 top-16 z-[120] flex max-w-[360px] items-start gap-2 border bg-[#1f2024] px-2.5 py-1.5 shadow-[0_8px_20px_rgba(0,0,0,0.45)] ${
+              contactToast.type === "success" ? "border-[#2f6a43]" : "border-[#7a3b33]"
+            }`}
+          >
+            <span
+              className={`mt-[3px] h-[8px] w-[8px] rounded-full ${
+                contactToast.type === "success" ? "bg-[#22c55e]" : "bg-[#ef4444]"
+              }`}
+            />
+            <span className="font-mono text-[11px] leading-[14px] text-[#d4d4d4]">{contactToast.message}</span>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </>
   )
 }
