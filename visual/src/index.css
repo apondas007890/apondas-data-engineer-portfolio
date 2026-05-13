@@ -1,0 +1,189 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Merriweather:wght@700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Merriweather", ui-serif, Georgia, serif;
+
+  --color-app-bg: #0a0e0e;
+  --color-app-secondary: #0a0e0e;
+  --color-app-card: #0a0e0e;
+  --color-app-card-elevated: #0a0e0e;
+
+  --color-light-bg: #f4efe6;
+  --color-light-secondary: #e9e1d4;
+  --color-light-card: #fffaf2;
+  --color-light-card-elevated: #f6efe3;
+
+  --color-accent-sage: #7a9277;
+  --color-accent-gold: #d1b46f;
+  --color-accent-copper: #b9774b;
+  --color-accent-steel: #8b9495;
+  --color-accent-teal: #7d9d98;
+
+  --color-text-primary: #f2ede4;
+  --color-text-secondary: #ccc5b7;
+  --color-text-muted: #958f82;
+
+  --color-light-text-primary: #161917;
+  --color-light-text-secondary: #4e5753;
+  --color-light-text-muted: #70736c;
+
+  --color-border-subtle: rgba(242, 237, 228, 0.11);
+  --color-light-border: rgba(22, 25, 23, 0.12);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  * {
+    @apply border-border-subtle;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  *::-webkit-scrollbar {
+    display: none;
+  }
+
+  body {
+    @apply font-sans antialiased transition-colors duration-300 overflow-x-hidden;
+    line-height: 1.55;
+    font-size: 16px;
+  }
+
+  .dark body {
+    @apply bg-app-bg text-text-primary;
+  }
+
+  .light body {
+    @apply bg-light-bg text-light-text-primary;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-serif tracking-tight;
+    line-height: 1.08;
+  }
+
+  a,
+  button,
+  input,
+  textarea {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-gold focus-visible:ring-offset-2;
+  }
+
+  .dark a,
+  .dark button,
+  .dark input,
+  .dark textarea {
+    @apply focus-visible:ring-offset-app-bg;
+  }
+
+  .light a,
+  .light button,
+  .light input,
+  .light textarea {
+    @apply focus-visible:ring-offset-light-bg;
+  }
+}
+
+@layer components {
+  .section-padding {
+    @apply px-4 py-12 sm:px-6 sm:py-14 md:px-8 md:py-16 lg:px-10 lg:py-20 xl:py-22;
+  }
+
+  .portfolio-grid-bg {
+    background-color: #0a0e0e;
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(173, 220, 228, 0.045) 1px, transparent 0),
+      linear-gradient(rgba(173, 220, 228, 0.016) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(173, 220, 228, 0.016) 1px, transparent 1px);
+    background-size: 28px 28px;
+    background-position: 0 0;
+  }
+
+  .light .portfolio-grid-bg {
+    background-color: #f4efe6;
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(46, 62, 64, 0.11) 1px, transparent 0),
+      linear-gradient(rgba(46, 62, 64, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(46, 62, 64, 0.05) 1px, transparent 1px);
+  }
+
+  .glass-card {
+    @apply overflow-hidden rounded-3xl border backdrop-blur-sm transition-all duration-300;
+  }
+
+  .dark .glass-card {
+    @apply border-border-subtle bg-app-card/88 hover:border-accent-gold/25 hover:bg-app-card-elevated;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+  }
+
+  .light .glass-card {
+    @apply border-light-border bg-light-card/95 hover:border-accent-gold/35 hover:bg-light-card-elevated;
+    box-shadow: 0 18px 45px rgba(18, 24, 23, 0.08);
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3.5 text-sm font-extrabold tracking-wide transition-all duration-300 active:scale-[0.98];
+  }
+
+  .dark .btn-primary {
+    @apply bg-accent-gold text-app-bg hover:bg-[#dec486];
+  }
+
+  .light .btn-primary {
+    @apply bg-accent-gold text-light-bg hover:bg-[#bc9d57];
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border px-5 py-3.5 text-sm font-extrabold tracking-wide transition-all duration-300 active:scale-[0.98];
+  }
+
+  .dark .btn-secondary {
+    @apply border-border-subtle bg-app-card/35 text-text-primary hover:border-accent-gold/45 hover:text-accent-gold;
+  }
+
+  .light .btn-secondary {
+    @apply border-light-border bg-light-card text-light-text-primary hover:border-accent-gold/45 hover:text-accent-gold;
+  }
+
+  .tech-grid {
+    background-image: none;
+  }
+
+  .light .tech-grid {
+    background-image: none;
+  }
+
+  .experience-description p {
+    @apply mb-2;
+  }
+
+  .experience-description p:last-child {
+    @apply mb-0;
+  }
+
+  .experience-description ul {
+    @apply my-1 list-disc pl-5;
+  }
+
+  .experience-description ol {
+    @apply my-1 list-decimal pl-5;
+  }
+
+  .experience-description li {
+    @apply mb-1.5;
+  }
+
+  .experience-description li::marker {
+    color: #d1b46f;
+  }
+}

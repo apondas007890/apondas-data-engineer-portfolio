@@ -8,9 +8,10 @@ interface ConnectDialogProps {
   onCancel: () => void
   onHelp: () => void
   onOptions: () => void
+  onVisualPortfolio: () => void
 }
 
-export function ConnectDialog({ onConnect, onCancel, onHelp, onOptions }: ConnectDialogProps) {
+export function ConnectDialog({ onConnect, onCancel, onHelp, onOptions, onVisualPortfolio }: ConnectDialogProps) {
   const dialogRef = useRef<HTMLDivElement>(null)
   const helpRef = useRef<HTMLDivElement>(null)
   const [position, setPosition] = useState({ x: 0, y: 0 })
@@ -287,7 +288,7 @@ export function ConnectDialog({ onConnect, onCancel, onHelp, onOptions }: Connec
             </label>
 
             <div className="connect-actions">
-              <button onClick={() => {}}>Visual Portfolio</button>
+              <button onClick={onVisualPortfolio}>Visual Portfolio</button>
               <button onClick={onConnect}>Connect</button>
               <button onClick={onCancel}>Cancel</button>
               <button

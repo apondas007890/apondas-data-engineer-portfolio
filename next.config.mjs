@@ -14,6 +14,18 @@ const nextConfig = {
   turbopack: {
     root: __dirname,
   },
+  async rewrites() {
+    return [
+      {
+        source: "/visualportfolio/:section",
+        destination: "/visual/index.html",
+      },
+      {
+        source: "/visualportfolio",
+        destination: "/visual/index.html",
+      },
+    ]
+  },
 }
 
 export default nextConfig

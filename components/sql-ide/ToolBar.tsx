@@ -906,6 +906,10 @@ function SqlShadesRow() {
     }
   }
 
+  const handleVisualPortfolioOpen = () => {
+    window.location.href = "/visualportfolio/home"
+  }
+
   return (
     <>
       <div className="flex h-[30px] items-center bg-[#2d2d30] pl-0 pr-1">
@@ -1006,6 +1010,8 @@ function SqlShadesRow() {
                     }
                   : label === "Resume"
                     ? handleResumeOpen
+                  : label === "Visual Portfolio"
+                    ? handleVisualPortfolioOpen
                   : undefined
               }
               className="flex h-[22px] items-center border border-[#3f3f46] bg-[#35353b] px-2.5 text-[11px] text-[#c7c7c7] hover:bg-[#3c3c43]"
@@ -1218,3 +1224,4 @@ export function ToolBar(props: ToolBarProps) {
     </div>
   )
 }
+

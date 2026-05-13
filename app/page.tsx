@@ -603,6 +603,10 @@ SELECT * FROM Portfolio.Certifications -- Shows certificates and achievements`
     router.push("/admin")
   }, [router])
 
+  const handleVisualPortfolioRedirect = useCallback(() => {
+    window.location.href = "/visualportfolio/home"
+  }, [])
+
   const isDark = theme === "dark"
 
   return (
@@ -624,6 +628,7 @@ SELECT * FROM Portfolio.Certifications -- Shows certificates and achievements`
           onCancel={() => {}}
           onHelp={() => {}}
           onOptions={handleOptionsRedirect}
+          onVisualPortfolio={handleVisualPortfolioRedirect}
         />
       )}
       <div
@@ -708,3 +713,4 @@ SELECT * FROM Portfolio.Certifications -- Shows certificates and achievements`
     </ThemeContext.Provider>
   )
 }
+

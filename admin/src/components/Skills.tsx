@@ -130,7 +130,17 @@ const BRAND_LOGO_MAP: Record<string, string> = {
 const getBrandLogoForSkill = (name: string) => {
   const normalized = normalizeSkill(name);
   if (normalized.includes('stratascratch')) return BRAND_LOGO_MAP.stratascratch;
-  if (normalized === 'sql' || /\bsql\b/.test(normalized)) return BRAND_LOGO_MAP.sql;
+  if (
+    normalized === 'spark sql' ||
+    normalized === 'spark streaming' ||
+    normalized === 'spark straming' ||
+    normalized === 'spark' ||
+    normalized === 'pyspark' ||
+    normalized === 'apache spark'
+  ) {
+    return BRAND_LOGO_MAP['spark sql'];
+  }
+  if (normalized === 'sql') return BRAND_LOGO_MAP.sql;
   return BRAND_LOGO_MAP[normalized] ?? null;
 };
 
