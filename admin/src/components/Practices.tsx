@@ -79,6 +79,17 @@ function practiceIconSrc(name: string) {
   return null;
 }
 
+function normalizeExternalUrl(url: string) {
+  const value = (url || "").trim();
+  if (!value || value === "#" || /^(null|undefined|n\/a)$/i.test(value)) return "#";
+  if (/^https?:\/\//i.test(value)) return value;
+  return `https://${value}`;
+}
+
+function isActiveExternalUrl(url: string) {
+  return url !== "#";
+}
+
 const INITIAL_PLATFORMS: Platform[] = [
   {
     id: '1',
@@ -662,6 +673,8 @@ function ChallengeEntry({ set, onEdit, onDelete }: { set: ProblemSet; onEdit: ()
   const [isExpanded, setIsExpanded] = useState(false);
   const highestCount = Math.max(set.stats.easy, set.stats.medium, set.stats.hard);
   const target = highestCount + 50;
+  const visitUrl = normalizeExternalUrl(set.url);
+  const linkDisabled = !isActiveExternalUrl(visitUrl);
 
   return (
     <div className="bg-[#0f1016]/40 border border-white/5 rounded-[2.5rem] p-8 group/entry hover:bg-[#0f1016]/60 hover:border-white/10 transition-all relative overflow-hidden">
@@ -669,36 +682,68 @@ function ChallengeEntry({ set, onEdit, onDelete }: { set: ProblemSet; onEdit: ()
       
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 relative z-10">
         <div className="flex items-center flex-wrap gap-4">
-          <a 
-            href={set.url} 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="flex items-center gap-4 group/link shrink-0"
-          >
-            <div className="p-3.5 rounded-2xl bg-brand-indigo/10 border border-brand-indigo/10 group-hover/link:bg-brand-indigo/20 group-hover/link:scale-105 transition-all shadow-lg">
-              {practiceIconSrc(set.name) ? (
-                <img
-                  src={practiceIconSrc(set.name)!}
-                  alt={set.name}
-                  className="w-5 h-5 object-contain"
-                  loading="lazy"
-                  onError={(e) => {
-                    e.currentTarget.style.display = "none";
-                    const fallback = e.currentTarget.nextElementSibling as HTMLElement | null;
-                    if (fallback) fallback.style.display = "block";
-                  }}
+          {linkDisabled ? (
+            <div
+              aria-disabled="true"
+              className="pointer-events-none cursor-default flex items-center gap-4 shrink-0"
+            >
+              <div className="p-3.5 rounded-2xl bg-brand-indigo/10 border border-brand-indigo/10 shadow-lg">
+                {practiceIconSrc(set.name) ? (
+                  <img
+                    src={practiceIconSrc(set.name)!}
+                    alt={set.name}
+                    className="w-5 h-5 object-contain"
+                    loading="lazy"
+                    onError={(e) => {
+                      e.currentTarget.style.display = "none";
+                      const fallback = e.currentTarget.nextElementSibling as HTMLElement | null;
+                      if (fallback) fallback.style.display = "block";
+                    }}
+                  />
+                ) : null}
+                <Target
+                  className="w-5 h-5 text-brand-indigo"
+                  style={{ display: practiceIconSrc(set.name) ? "none" : "block" }}
                 />
-              ) : null}
-              <Target
-                className="w-5 h-5 text-brand-indigo"
-                style={{ display: practiceIconSrc(set.name) ? "none" : "block" }}
-              />
+              </div>
+              <h4 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
+                {set.name}
+                <ExternalLink className="w-3.5 h-3.5 text-white/20" />
+              </h4>
             </div>
-            <h4 className="text-xl font-bold text-white tracking-tight flex items-center gap-2 group-hover/link:text-brand-indigo transition-colors">
-              {set.name}
-              <ExternalLink className="w-3.5 h-3.5 text-white/20 group-hover/link:text-brand-indigo group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-all" />
-            </h4>
-          </a>
+          ) : (
+            <a
+              href={visitUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`${set.name} external link`}
+              className="flex items-center gap-4 group/link shrink-0"
+            >
+              <div className="p-3.5 rounded-2xl bg-brand-indigo/10 border border-brand-indigo/10 group-hover/link:bg-brand-indigo/20 group-hover/link:scale-105 transition-all shadow-lg">
+                {practiceIconSrc(set.name) ? (
+                  <img
+                    src={practiceIconSrc(set.name)!}
+                    alt={set.name}
+                    className="w-5 h-5 object-contain"
+                    loading="lazy"
+                    onError={(e) => {
+                      e.currentTarget.style.display = "none";
+                      const fallback = e.currentTarget.nextElementSibling as HTMLElement | null;
+                      if (fallback) fallback.style.display = "block";
+                    }}
+                  />
+                ) : null}
+                <Target
+                  className="w-5 h-5 text-brand-indigo"
+                  style={{ display: practiceIconSrc(set.name) ? "none" : "block" }}
+                />
+              </div>
+              <h4 className="text-xl font-bold text-white tracking-tight flex items-center gap-2 group-hover/link:text-brand-indigo transition-colors">
+                {set.name}
+                <ExternalLink className="w-3.5 h-3.5 text-white/20 group-hover/link:text-brand-indigo group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-all" />
+              </h4>
+            </a>
+          )}
           
           <button 
             onClick={() => setIsExpanded(!isExpanded)}

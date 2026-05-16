@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { ArrowUpRight, Calendar, Building2, MapPin } from 'lucide-react';
 import { EXPERIENCE } from '../constants/data';
 import { MediaThumb } from './MediaThumb';
+import RichTextRenderer from './RichTextRenderer';
 
 type DbExperience = {
   id: string;
@@ -48,6 +49,7 @@ export const Experience = () => {
         company: item.company,
         location: item.location,
         duration: item.duration,
+        images: item.images || [],
         image: item.images[0] || '',
         imageAlt: `${item.company} experience image`,
         websiteUrl: item.websiteUrl || '#',
@@ -61,6 +63,7 @@ export const Experience = () => {
       company: exp.company,
       location: exp.location,
       duration: exp.duration,
+      images: exp.image ? [exp.image] : [],
       image: exp.image,
       imageAlt: exp.imageAlt,
       websiteUrl: exp.websiteUrl,
@@ -94,6 +97,7 @@ export const Experience = () => {
               <div className="grid gap-6 lg:grid-cols-[210px_minmax(0,1fr)]">
                 <MediaThumb
                   src={exp.image}
+                  images={exp.images}
                   alt={exp.imageAlt}
                   icon={Building2}
                   label={exp.company}
@@ -113,9 +117,9 @@ export const Experience = () => {
                             href={exp.websiteUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 rounded-lg border border-border-subtle bg-app-bg/60 px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.08em] text-text-secondary transition hover:border-accent-gold hover:text-accent-gold"
+                            className="visual-website-link"
                           >
-                            <ArrowUpRight size={12} />
+                            <ArrowUpRight size={9} />
                             <span>Website</span>
                           </a>
                         ) : null}
@@ -134,9 +138,9 @@ export const Experience = () => {
                     </div>
                   </div>
 
-                  <div
-                    className="experience-description text-[14px] leading-relaxed text-[#93a6c4] md:text-[16px]"
-                    dangerouslySetInnerHTML={{ __html: exp.descriptionHtml || '<p>NULL</p>' }}
+                  <RichTextRenderer
+                    content={exp.descriptionHtml}
+                    className="text-[14px] leading-relaxed text-[#93a6c4] md:text-[16px]"
                   />
                 </div>
               </div>

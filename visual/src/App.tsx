@@ -9,7 +9,8 @@ import { Projects } from './components/Projects';
 import { Education } from './components/Education';
 import { Certifications } from './components/Certifications';
 import { Practice } from './components/Practice';
-import { ContactPage, Footer } from './components/Footer';
+import { Contact } from './components/Contact';
+import { Footer } from './components/Footer';
 
 export default function App() {
   const readSectionFromPath = () => {
@@ -21,10 +22,12 @@ export default function App() {
   useEffect(() => {
     const scrollToSection = (sectionId: string) => {
       if (sectionId === 'home') {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        return;
-      }
-      if (sectionId === 'contact') {
+        const home = document.getElementById('home');
+        if (home) {
+          home.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          return;
+        }
+
         window.scrollTo({ top: 0, behavior: 'smooth' });
         return;
       }
@@ -44,14 +47,14 @@ export default function App() {
   return (
     <ThemeProvider>
       <div className="portfolio-grid-bg min-h-screen overflow-x-hidden selection:bg-accent-gold selection:text-app-bg">
-        {!isContactRoute ? <VisualPortfolioNav /> : null}
+        <VisualPortfolioNav />
         <main>
           {isContactRoute ? (
-            <ContactPage />
+            <Contact standalone />
           ) : (
             <>
               <Hero />
-              <div className="sm:pl-[122px] sm:pr-[40px] [&_.section-padding]:!pl-[30px]">
+              <div className="sm:pl-[142px] sm:pr-[40px] [&_.section-padding]:!pl-[30px]">
                 <About />
                 <Skills />
                 <Experience />

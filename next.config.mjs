@@ -5,6 +5,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  allowedDevOrigins: ["192.168.10.234"],
   typescript: {
     ignoreBuildErrors: true,
   },

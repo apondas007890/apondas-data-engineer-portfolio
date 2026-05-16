@@ -11,6 +11,7 @@ import { StatusBar } from "@/components/sql-ide/status-bar"
 import { SplashScreen } from "@/components/sql-ide/splash-screen"
 import { ConnectDialog } from "@/components/sql-ide/connect-dialog"
 import { supabase } from "@/src/lib/supabase/client"
+import { normalizeRichTextHtml } from "@/src/lib/rich-text"
 
 export interface Tab {
   id: string
@@ -129,42 +130,10 @@ SELECT * FROM Portfolio.Certifications -- Shows certificates and achievements`
     const normalizedSql = rawSql.replace(/\s+/g, " ").trim()
 
     try {
-      const toPlainText = (htmlLike: unknown): string => {
+      const toRichHtml = (htmlLike: unknown): string => {
         const raw = typeof htmlLike === "string" ? htmlLike : ""
         if (!raw.trim()) return "NULL"
-
-        const withLineBreaks = raw
-          .replace(/<\s*\/li\s*>/gi, "\n")
-          .replace(/<\s*li[^>]*>/gi, "")
-          .replace(/<\s*\/ul\s*>/gi, "\n")
-          .replace(/<\s*ul[^>]*>/gi, "\n")
-          .replace(/<\s*\/ol\s*>/gi, "\n")
-          .replace(/<\s*ol[^>]*>/gi, "\n")
-          .replace(/<\s*\/p\s*>/gi, "\n")
-          .replace(/<\s*br\s*\/?\s*>/gi, "\n")
-          .replace(/<\s*p[^>]*>/gi, "")
-
-        const decoded = withLineBreaks
-          .replace(/&nbsp;/gi, " ")
-          .replace(/&amp;/gi, "&")
-          .replace(/&lt;/gi, "<")
-          .replace(/&gt;/gi, ">")
-          .replace(/&#39;/gi, "'")
-          .replace(/&quot;/gi, "\"")
-
-        const noTags = decoded.replace(/<[^>]*>/g, "")
-        const normalized = noTags
-          .replace(/\r/g, "")
-          .replace(/[ \t]*\n[ \t]*/g, "\n")
-          .replace(/\n{3,}/g, "\n\n")
-          .replace(/[ \t]+/g, " ")
-          .split("\n")
-          .map((line) => line.trim())
-          .filter(Boolean)
-          .join("\n")
-          .trim()
-
-        return normalized.length > 0 ? normalized : "NULL"
+        return normalizeRichTextHtml(raw)
       }
 
       if (!normalizedSql) {
@@ -243,7 +212,7 @@ SELECT * FROM Portfolio.Certifications -- Shows certificates and achievements`
           name: row.full_name ?? "",
           dob: row.dob ?? "",
           role: row.role_title ?? "",
-          bio: toPlainText(row.bio_html),
+          bio: toRichHtml(row.bio_html),
           email: row.email ?? "",
           phone_number: row.phone_number ?? "",
           whatsapp_number: row.whatsapp_number ?? "",
@@ -311,7 +280,7 @@ SELECT * FROM Portfolio.Certifications -- Shows certificates and achievements`
           image: (imagesByProjectId[row.id] || []).join("||"),
           project_title: row.project_title ?? "",
           tech_stack: (tagsByProjectId[row.id] || []).join(", "),
-          description: toPlainText(row.description_html),
+          description: toRichHtml(row.description_html),
           github_url: row.github_url ?? "",
           live_url: liveUrl.length > 0 ? liveUrl : "NULL",
           }
@@ -324,7 +293,7 @@ SELECT * FROM Portfolio.Certifications -- Shows certificates and achievements`
       if (isCertificationsQuery) {
         const { data, error } = await supabase
           .from("certifications")
-          .select("id,certification_title,issuer,issued_date,verification_url,certificate_pdf_url,deleted_at,created_at,updated_at")
+          .select("id,certification_title,issuer,issued_date,description,verification_url,certificate_pdf_url,deleted_at,created_at,updated_at")
           .is("deleted_at", null)
           .order("created_at", { ascending: false })
           .order("updated_at", { ascending: false })
@@ -339,6 +308,7 @@ SELECT * FROM Portfolio.Certifications -- Shows certificates and achievements`
           certification_title: row.certification_title ?? "",
           issuer: row.issuer ?? "",
           issued_date: row.issued_date ?? "NULL",
+          description: toRichHtml(row.description),
           verification_url: (row.verification_url ?? "").trim() || "NULL",
           certicifate: (row.certificate_pdf_url ?? "").trim() || "NULL",
         }))
@@ -480,7 +450,7 @@ SELECT * FROM Portfolio.Certifications -- Shows certificates and achievements`
             company_website: row.company_website_url ?? "",
             location: row.location ?? "",
             role: row.role ?? "",
-            description: toPlainText(row.description_html),
+            description: toRichHtml(row.description_html),
             start_date: startDate || "NULL",
             end_date: endDate || "NULL",
           }
@@ -540,7 +510,7 @@ SELECT * FROM Portfolio.Certifications -- Shows certificates and achievements`
         const images = mediaByEducationId[row.id] || []
         const start = [row.start_month, row.start_year].filter(Boolean).join(", ")
         const end = [row.end_month, row.end_year].filter(Boolean).join(", ")
-        const descriptionText = toPlainText(row.description_html)
+        const descriptionText = toRichHtml(row.description_html)
 
         const monthRank: Record<string, number> = {
           january: 1, february: 2, march: 3, april: 4, may: 5, june: 6,

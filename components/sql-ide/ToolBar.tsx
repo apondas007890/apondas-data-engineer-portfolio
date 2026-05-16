@@ -682,9 +682,9 @@ function SqlShadesRow() {
   })
   const [contactSubmitted, setContactSubmitted] = useState(false)
   const [isContactSending, setIsContactSending] = useState(false)
-  const [contactNextUrl, setContactNextUrl] = useState("")
-  const [contactFormUrl, setContactFormUrl] = useState("")
   const [contactToast, setContactToast] = useState<{ type: "success" | "error"; message: string } | null>(null)
+  // For the Next app, add NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY to the root .env.local and restart the dev server.
+  const web3FormsAccessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY
   const commandGuide = [
     {
       command: "SELECT * FROM Portfolio.about;",
@@ -800,13 +800,6 @@ function SqlShadesRow() {
   }, [isContactOpen])
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      setContactNextUrl(`${window.location.origin}?contact=success`)
-      setContactFormUrl(window.location.href)
-    }
-  }, [])
-
-  useEffect(() => {
     if (!contactToast) return
     const timer = window.setTimeout(() => {
       setContactToast(null)
@@ -835,31 +828,44 @@ function SqlShadesRow() {
 
     if (!validation.isValid || isContactSending) return
 
+    if (!web3FormsAccessKey) {
+      console.error("Missing NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY. Add it to the root .env.local and restart dev server.")
+      setContactToast({
+        type: "error",
+        message: "Message failed to send. Please try again.",
+      })
+      return
+    }
+
     try {
       setIsContactSending(true)
 
-      const formData = new FormData()
-      formData.append("name", contactName.trim())
-      formData.append("email", contactEmail.trim())
-      formData.append("message", contactMessage.trim())
-      formData.append("_subject", "New message from SSMS Portfolio")
-      formData.append("_template", "table")
-      formData.append("_captcha", "true")
-      formData.append("_replyto", contactEmail.trim())
-      formData.append("_honey", "")
-      if (contactNextUrl) formData.append("_next", contactNextUrl)
-      if (contactFormUrl) formData.append("_url", contactFormUrl)
+      const payload = {
+        access_key: web3FormsAccessKey,
+        name: contactName.trim(),
+        email: contactEmail.trim(),
+        message: contactMessage.trim(),
+        subject: `New SQL-IDE message from ${contactName.trim()}`,
+        from_name: `${contactName.trim()} via SQL-IDE`,
+        replyto: contactEmail.trim(),
+        source: "SQL-IDE Contact",
+        botcheck: "",
+      }
 
-      const response = await fetch("https://formsubmit.co/ajax/apondas007890@gmail.com", {
+      const response = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
         headers: {
+          "Content-Type": "application/json",
           Accept: "application/json",
         },
-        body: formData,
+        body: JSON.stringify(payload),
       })
 
-      if (!response.ok) {
-        throw new Error("FormSubmit request failed")
+      const result = (await response.json()) as { success?: boolean; message?: string }
+
+      if (!response.ok || !result.success) {
+        console.error("Web3Forms submit failed:", result)
+        throw new Error(result.message || "Web3Forms submit failed")
       }
 
       resetContactState()
@@ -868,7 +874,8 @@ function SqlShadesRow() {
         type: "success",
         message: "Message sent successfully. I’ll reply soon.",
       })
-    } catch (_error) {
+    } catch (error) {
+      console.error("SQL-IDE contact submit error:", error)
       setContactToast({
         type: "error",
         message: "Message failed to send. Please try again.",
@@ -967,7 +974,7 @@ function SqlShadesRow() {
             </button>
             <div className="pointer-events-none invisible absolute left-0 top-full z-40 mt-1 w-[min(420px,calc(100vw-24px))] border border-[#505085] bg-[#252526] opacity-0 shadow-[0_8px_22px_rgba(0,0,0,0.45)] transition-opacity duration-150 group-hover:pointer-events-auto group-hover:visible group-hover:opacity-100">
               <div className="border-b border-[#505085] bg-[#5b5794] px-3 py-2">
-                <div className="text-[13px] font-semibold text-[#f3ec7a]">Welcome to Apon's Portfolio</div>
+                <div className="text-[13px] font-semibold text-[#f3ec7a]">Welcome to Apon&apos;s Portfolio</div>
                 <div className="mt-0.5 text-[11px] text-[#d8d8ea]">
                   A SQL Server inspired portfolio where you can query my profile like a database.
                 </div>
@@ -1047,20 +1054,9 @@ function SqlShadesRow() {
               </button>
             </div>
             <form
-              action="https://formsubmit.co/apondas007890@gmail.com"
-              method="POST"
               className="bg-[#252526] px-[14px] py-[14px] text-[12px] text-[#d4d4d4]"
               onSubmit={handleContactSubmit}
             >
-              {/* First FormSubmit submission may require email confirmation. */}
-              <input type="hidden" name="_subject" value="New message from SSMS Portfolio" />
-              <input type="hidden" name="_template" value="table" />
-              <input type="hidden" name="_captcha" value="true" />
-              <input type="hidden" name="_replyto" value={contactEmail.trim()} />
-              <input type="hidden" name="_next" value={contactNextUrl} />
-              <input type="hidden" name="_url" value={contactFormUrl} />
-              <input type="text" name="_honey" style={{ display: "none" }} tabIndex={-1} autoComplete="off" />
-
               <div className="mb-[10px] text-[12px] leading-[18px] text-[#bfc0c3]">
                 Have a question, feedback, or opportunity? Send a message here, and I’ll do my best to reply as soon as possible.
               </div>

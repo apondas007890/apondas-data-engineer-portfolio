@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import RichTextEditor from './RichTextEditor';
+import RichTextRenderer from '@/src/components/ui/RichTextRenderer';
 import MultipleImageUpload from './MultipleImageUpload';
 import Slideshow from './Slideshow';
 import { getCurrentAdminProfile } from '@/src/lib/supabase/admin-data';
@@ -369,9 +370,9 @@ export default function Education() {
 
                 {edu.description && (
                   <div className="pt-4 border-t border-white/5">
-                    <div 
-                      className="text-[#8fa3bf] text-[14px] leading-relaxed max-w-4xl font-medium prose prose-invert opacity-80"
-                      dangerouslySetInnerHTML={{ __html: edu.description }}
+                    <RichTextRenderer
+                      content={edu.description}
+                      className="admin-rich-preview text-[#8fa3bf] text-[14px] leading-relaxed max-w-4xl font-medium opacity-80"
                     />
                   </div>
                 )}

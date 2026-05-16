@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { XIcon, Loader2Icon } from "lucide-react"
 import { useTheme } from "@/app/page"
+import RichTextRenderer from "@/src/components/ui/RichTextRenderer"
 
 interface ResultsPanelProps {
   data: Record<string, string | number>[] | null
@@ -52,6 +53,7 @@ export function ResultsPanel({ data, isLoading, onClose }: ResultsPanelProps) {
   const [previewImages, setPreviewImages] = useState<string[] | null>(null)
   const [previewIndex, setPreviewIndex] = useState(0)
   const [slideshowTick, setSlideshowTick] = useState(0)
+  const [richPreview, setRichPreview] = useState<{ title: string; html: string } | null>(null)
   const columns = data && data.length > 0 ? Object.keys(data[0]) : []
   const rowTotal = data?.length ?? 0
   const sqlErrorMessage = data?.[0]?.Message
@@ -61,6 +63,10 @@ export function ResultsPanel({ data, isLoading, onClose }: ResultsPanelProps) {
   const showResultsGridFrame = isDark && activeTab === "results" && resultView === "grid"
   const showMessagesFrame = isDark && activeTab === "messages"
   const showResultsTextFrame = isDark && activeTab === "results" && resultView === "vertical"
+  const isRichField = (column: string) => {
+    const key = column.toLowerCase()
+    return key === "bio" || key === "description"
+  }
 
   useEffect(() => {
     if (hasSqlError) {
@@ -428,7 +434,7 @@ export function ResultsPanel({ data, isLoading, onClose }: ResultsPanelProps) {
                               const cellValue = String(row[col])
                               const isNullLike = cellValue === "NULL"
                               const normalizedCol = col.toLowerCase()
-                              const isBioColumn = normalizedCol === "bio" || normalizedCol === "description"
+                              const isBioColumn = isRichField(col)
                               const baseCellStyle = isBioColumn
                                 ? {
                                     whiteSpace: "pre-line" as const,
@@ -559,6 +565,21 @@ export function ResultsPanel({ data, isLoading, onClose }: ResultsPanelProps) {
                                 )
                               }
 
+                              if (isRichField(col) && value && value !== "NULL") {
+                                return (
+                                  <button
+                                    type="button"
+                                    className="block w-full text-left text-inherit"
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      setRichPreview({ title: col, html: value })
+                                    }}
+                                  >
+                                    <RichTextRenderer html={value} />
+                                  </button>
+                                )
+                              }
+
                               return value
                             })()}
                           </td>
@@ -603,7 +624,7 @@ export function ResultsPanel({ data, isLoading, onClose }: ResultsPanelProps) {
                       return (
                         <div key={`${rowIndex}-${col}`} className="grid grid-cols-[136px_minmax(0,1fr)] gap-x-4">
                           <span className={isDark ? "text-[#dcdcdc]" : undefined}>{col}:</span>
-                          <span
+                          <div
                             className={
                               isNullLike && isDark
                                 ? "inline-block w-fit bg-[#444466] px-1 text-[#ffffff]"
@@ -653,12 +674,14 @@ export function ResultsPanel({ data, isLoading, onClose }: ResultsPanelProps) {
                               >
                                 {value}
                               </a>
+                            ) : isRichField(col) && value !== "NULL" ? (
+                              <div>
+                                <RichTextRenderer html={value} />
+                              </div>
                             ) : (
-                              <span style={{ whiteSpace: key === "description" || key === "bio" ? "pre-line" : "normal" }}>
-                                {value}
-                              </span>
+                              <span>{value}</span>
                             )}
-                          </span>
+                          </div>
                         </div>
                       )
                     })}
@@ -722,6 +745,31 @@ export function ResultsPanel({ data, isLoading, onClose }: ResultsPanelProps) {
           />
         </div>
       )}
+      {richPreview ? (
+        <div
+          className="absolute inset-0 z-50 flex items-center justify-center bg-black/75 px-6"
+          onClick={() => setRichPreview(null)}
+        >
+          <div
+            className="max-h-[80vh] w-full max-w-3xl overflow-auto rounded-2xl border border-white/15 bg-[#111315] p-6 text-[#f5f5f5] shadow-2xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="mb-4 flex items-center justify-between gap-4">
+              <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-[#d6be73]">
+                {richPreview.title}
+              </h3>
+              <button
+                type="button"
+                className="rounded-lg p-1 text-white/70 transition hover:bg-white/10 hover:text-white"
+                onClick={() => setRichPreview(null)}
+              >
+                <XIcon size={16} />
+              </button>
+            </div>
+            <RichTextRenderer html={richPreview.html} className="text-sm text-[#d9d9d9]" />
+          </div>
+        </div>
+      ) : null}
       <style jsx global>{`
         .ssms-results-scroll::-webkit-scrollbar {
           width: 8px;

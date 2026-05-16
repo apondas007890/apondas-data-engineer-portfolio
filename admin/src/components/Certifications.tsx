@@ -2,9 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { Award, Plus, Edit2, Trash2, CheckCircle2, X, ExternalLink, Calendar, FileText, Upload, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Award, Plus, Edit2, Trash2, CheckCircle2, ExternalLink, Calendar, FileText, Upload, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Icon } from '@iconify/react';
 import { cn } from '@/lib/utils';
+import RichTextEditor from '@/src/components/admin/RichTextEditor';
+import RichTextRenderer from '@/src/components/ui/RichTextRenderer';
 import { getCurrentAdminProfile } from '@/src/lib/supabase/admin-data';
 import { deleteCertification, listCertifications, upsertCertification } from '@/src/lib/supabase/phase4-data';
 import { ConfirmDeleteDialog } from '@/src/components/admin/ConfirmDeleteDialog';
@@ -16,6 +18,7 @@ interface Certification {
   issuer_icon_key?: string | null;
   issuer_logo_url?: string | null;
   issued_date: string | null;
+  description?: string | null;
   url?: string;
   pdf_url?: string;
 }
@@ -90,6 +93,7 @@ export default function Certifications() {
       issuer_icon_key: resolveIssuerIconKey(r.issuer, r.issuer_icon_key),
       issuer_logo_url: r.issuer_logo_url || null,
       issued_date: r.issued_date || null,
+      description: r.description || '',
       url: r.verification_url || '',
       pdf_url: r.certificate_pdf_url || '',
     }));
@@ -132,6 +136,7 @@ export default function Certifications() {
           issuer: cert.issuer?.trim() || '',
           issuer_icon_key: resolveIssuerIconKey(cert.issuer?.trim() || '', cert.issuer_icon_key),
           issued_date: cert.issued_date?.trim() || null,
+          description: cert.description || null,
           verification_url: cert.url?.trim() || null,
         },
         pdfFile,
@@ -278,7 +283,15 @@ export default function Certifications() {
                 )}
               </div>
 
-              <div className="flex items-center gap-4 pt-4 border-t border-white/5">
+              <div className="pt-4 border-t border-white/5">
+                {cert.description ? (
+                  <RichTextRenderer
+                    content={cert.description}
+                    className="admin-rich-preview mb-4 text-sm leading-relaxed text-[#b6c0d0]"
+                  />
+                ) : null}
+
+                <div className="flex items-center gap-4">
                 {cert.pdf_url && (
                   <a href={cert.pdf_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 px-5 py-2.5 bg-brand-indigo/10 border border-brand-indigo/20 rounded-xl text-[10px] font-black text-brand-indigo hover:bg-brand-indigo/20 transition-all uppercase tracking-[0.2em]">
                     View Certificate
@@ -289,6 +302,7 @@ export default function Certifications() {
                     External Verification <ExternalLink className="w-3.5 h-3.5 transition-transform group-hover/link:translate-x-1 group-hover/link:-translate-y-1" />
                   </a>
                 )}
+                </div>
               </div>
             </div>
           </motion.div>
@@ -364,6 +378,7 @@ function CertModal({ isOpen, onClose, onSave, cert }: { isOpen: boolean; onClose
     title: '',
     issuer: '',
     issued_date: '',
+    description: '',
     url: '',
     pdf_url: ''
   });
@@ -376,7 +391,7 @@ function CertModal({ isOpen, onClose, onSave, cert }: { isOpen: boolean; onClose
 
   useEffect(() => {
     if (cert) setFormData(cert);
-    else setFormData({ title: '', issuer: '', issued_date: '', url: '', pdf_url: '' });
+    else setFormData({ title: '', issuer: '', issued_date: '', description: '', url: '', pdf_url: '' });
     setPdfFile(null);
     setPdfName('');
     setErrors({});
@@ -572,6 +587,14 @@ function CertModal({ isOpen, onClose, onSave, cert }: { isOpen: boolean; onClose
             <AnimatePresence>
               {errors.url && <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-[11px] text-brand-orange font-bold mt-2 ml-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.url}</motion.p>}
             </AnimatePresence>
+          </div>
+          <div>
+            <label className="text-[10px] font-black uppercase tracking-widest text-[#9ca3af] block mb-4">Small Description</label>
+            <RichTextEditor
+              value={formData.description || ''}
+              onChange={(value) => handleChange('description', value)}
+              placeholder="Add a short rich description for this certification..."
+            />
           </div>
           <div className="flex gap-4 pt-8">
             <button type="button" onClick={onClose} className="flex-1 py-4 rounded-2xl bg-white/5 text-gray-500 font-bold text-[10px] uppercase tracking-widest hover:bg-white/10 transition-all">Cancel</button>

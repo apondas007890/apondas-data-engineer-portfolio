@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getCurrentAdminProfile } from '@/src/lib/supabase/admin-data';
+import RichTextEditor from '@/src/components/admin/RichTextEditor';
 import { supabase } from '@/src/lib/supabase/client';
 import { buildSafeFileName, deleteFile, uploadFile } from '@/src/lib/supabase/storage';
 
@@ -81,10 +82,14 @@ export default function Personal() {
     load();
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     validate(name, value);
+  };
+
+  const handleBioChange = (value: string) => {
+    setFormData(prev => ({ ...prev, bio: value }));
   };
 
   const handleImageClick = () => {
@@ -443,16 +448,11 @@ export default function Personal() {
                 {/* Bio */}
                 <div className="group col-span-full">
                   <label className={labelClasses}>Professional Bio</label>
-                  <div className="relative">
-                    <textarea 
-                      name="bio"
-                      value={formData.bio}
-                      onChange={handleChange}
-                      rows={5}
-                      placeholder="Tell us about yourself..."
-                      className="w-full bg-white/[0.03] border border-white/10 rounded-[2rem] p-6 text-white font-medium placeholder:text-[#6f7f95] focus:outline-none focus:border-brand-blue/30 focus:bg-white/[0.05] transition-all resize-none leading-relaxed"
-                    />
-                  </div>
+                  <RichTextEditor
+                    value={formData.bio}
+                    onChange={handleBioChange}
+                    placeholder="Tell us about yourself..."
+                  />
                 </div>
               </div>
             </div>

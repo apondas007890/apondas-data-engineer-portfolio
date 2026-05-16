@@ -165,15 +165,15 @@ function getRingConfig(width: number) {
 }
 
 function getVisibleCount(width: number) {
-  if (width < 640) return 8;
-  if (width < 1024) return 16;
-  return 30;
+  if (width < 640) return 12;
+  if (width < 1024) return 24;
+  return 44;
 }
 
 function getRingDistribution(width: number): number[] {
-  if (width < 640) return [2, 2, 2, 1, 1];
-  if (width < 1024) return [4, 3, 3, 3, 3];
-  return [6, 6, 6, 6, 6];
+  if (width < 640) return [2, 2, 2, 3, 3];
+  if (width < 1024) return [4, 4, 5, 5, 6];
+  return [7, 8, 9, 10, 10];
 }
 
 function getOrbitCenter(width: number, height: number) {
@@ -204,12 +204,12 @@ function buildClientItems(width: number, ringConfig: Record<RingId, RingConfig>)
     if (itemsForRing.length === 0) return;
 
     const config = ringConfig[ring];
-    const baseOffset = Math.random() * TWO_PI;
+    const baseOffset = ringIndex * 0.44 + (width < 1024 ? 0.12 : 0.2);
     const angleStep = TWO_PI / itemsForRing.length;
 
     itemsForRing.forEach((item, itemIndex) => {
       const baseAngle = baseOffset + itemIndex * angleStep;
-      const speedVariation = 1 + (Math.random() * 0.06 - 0.03);
+      const speedVariation = 1 + ((itemIndex % 3) - 1) * 0.018;
 
       result.push({
         ...item,
@@ -276,7 +276,7 @@ export function HeroOrbit() {
       const { x: liveCenterX, y: liveCenterY } = getOrbitCenter(window.innerWidth, window.innerHeight);
       const liveRingConfig = getRingConfig(window.innerWidth);
       const liveLeftGuard =
-        window.innerWidth < 640 ? window.innerWidth * 0.18 : window.innerWidth < 1024 ? window.innerWidth * 0.42 : window.innerWidth * 0.5;
+        window.innerWidth < 640 ? window.innerWidth * 0.16 : window.innerWidth < 1024 ? window.innerWidth * 0.4 : window.innerWidth * 0.48;
 
       for (const item of itemsRef.current) {
         const pillNode = pillRefs.current[item.id];
@@ -291,7 +291,7 @@ export function HeroOrbit() {
         if (x < liveLeftGuard && y > window.innerHeight * 0.12 && y < window.innerHeight * 0.9) {
           opacity = 0;
         } else if (x < liveLeftGuard + 80) {
-          opacity = 0.28;
+          opacity = 0.34;
         }
 
         if (x < -220 || x > window.innerWidth + 220 || y < -180 || y > window.innerHeight + 180) {
@@ -360,7 +360,7 @@ export function HeroOrbit() {
             willChange: reducedMotion ? 'auto' : 'transform, opacity',
           }}
         >
-          <div className="flex items-center gap-2 rounded-full border border-[rgba(0,238,255,0.22)] bg-[rgba(17,17,17,0.78)] px-3 py-2 backdrop-blur-[10px] transition-transform duration-200 hover:scale-[1.04] hover:border-[rgba(0,238,255,0.34)]">
+          <div className="flex items-center gap-2.5 rounded-full border border-[rgba(0,238,255,0.24)] bg-[rgba(12,14,15,0.8)] px-3 py-1.5 backdrop-blur-[8px] transition-transform duration-200 hover:scale-[1.04] hover:border-[rgba(0,238,255,0.36)]">
             <span className="flex h-7 w-7 items-center justify-center">
               {pill.imageSrc ? (
                 <img
@@ -381,7 +381,7 @@ export function HeroOrbit() {
                 <Code2 size={16} color="#f5f5f5" />
               )}
             </span>
-            <span className="whitespace-nowrap text-[10px] font-bold uppercase tracking-[0.14em] text-[#f5f5f5]">
+            <span className="whitespace-nowrap text-[10px] font-bold uppercase tracking-[0.12em] text-[#f5f5f5]">
               {pill.label}
             </span>
           </div>

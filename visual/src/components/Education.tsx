@@ -3,9 +3,21 @@ import { motion } from 'motion/react';
 import { ArrowUpRight, CalendarRange, Award } from 'lucide-react';
 import { EDUCATION } from '../constants/data';
 import { MediaThumb } from './MediaThumb';
+import RichTextRenderer from './RichTextRenderer';
+
+type DbEducation = {
+  id: string;
+  degree: string;
+  institution: string;
+  websiteUrl: string;
+  year: string;
+  result: string;
+  descriptionHtml: string;
+  images?: string[];
+};
 
 export const Education = () => {
-  const [dbEducation, setDbEducation] = useState<any[] | null>(null);
+  const [dbEducation, setDbEducation] = useState<DbEducation[] | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -15,7 +27,7 @@ export const Education = () => {
         if (!res.ok) return;
         const payload = await res.json();
         if (!mounted) return;
-        const rows = Array.isArray(payload?.educations) ? payload.educations : [];
+        const rows = Array.isArray(payload?.educations) ? (payload.educations as DbEducation[]) : [];
         setDbEducation(rows.length > 0 ? rows : null);
       } catch {
         setDbEducation(null);
@@ -37,6 +49,7 @@ export const Education = () => {
         year: row.year,
         result: row.result,
         descriptionHtml: row.descriptionHtml,
+        images: row.images || [],
         image: row.images?.[0] || '',
         imageAlt: row.institution || 'Education image',
         icon: Award,
@@ -51,6 +64,7 @@ export const Education = () => {
       year: edu.year,
       result: edu.result,
       descriptionHtml: `<p>${edu.description}</p>`,
+      images: edu.image ? [edu.image] : [],
       image: edu.image,
       imageAlt: edu.imageAlt,
       icon: edu.icon,
@@ -83,6 +97,7 @@ export const Education = () => {
               <div className="grid gap-5 lg:grid-cols-[190px_minmax(0,1fr)] lg:items-center">
                 <MediaThumb
                   src={edu.image}
+                  images={edu.images}
                   alt={edu.imageAlt || edu.institution}
                   icon={edu.icon || Award}
                   label={edu.institution}
@@ -104,9 +119,9 @@ export const Education = () => {
                         href={edu.websiteUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 rounded-xl border border-border-subtle bg-app-bg/80 px-3 py-2 text-[10px] font-extrabold uppercase tracking-[0.18em] text-text-muted transition hover:border-accent-gold/45 hover:bg-accent-gold/10 hover:text-accent-gold"
+                        className="visual-website-link"
                       >
-                        <ArrowUpRight size={14} />
+                        <ArrowUpRight size={9} />
                         <span>Website</span>
                       </a>
                     </div>
@@ -124,9 +139,9 @@ export const Education = () => {
                     </div>
                   </div>
 
-                  <div
-                    className="experience-description max-w-4xl text-sm leading-relaxed text-text-secondary"
-                    dangerouslySetInnerHTML={{ __html: edu.descriptionHtml || '<p>NULL</p>' }}
+                  <RichTextRenderer
+                    content={edu.descriptionHtml}
+                    className="max-w-4xl text-sm leading-relaxed text-text-secondary"
                   />
                 </div>
               </div>

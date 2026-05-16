@@ -7,8 +7,10 @@ import { cn } from '@/lib/utils';
 import MultipleImageUpload from './MultipleImageUpload';
 import Slideshow from './Slideshow';
 import RichTextEditor from './RichTextEditor';
+import RichTextRenderer from '@/src/components/ui/RichTextRenderer';
 import { getCurrentAdminProfile } from '@/src/lib/supabase/admin-data';
 import { deleteProjectWithAssets, listProjects, upsertProjectWithAssets } from '@/src/lib/supabase/phase3-data';
+import { isRichTextBlank } from '@/src/lib/rich-text';
 
 const TECH_CONFIG: Record<string, { color: string; icon: any; slug?: string }> = {
   'React': { color: '#61DAFB', icon: Layers, slug: 'react' },
@@ -419,12 +421,12 @@ export default function Projects() {
                     </div>
 
                     {/* Line 3: Description */}
-                    <div className="pt-2 border-t border-white/5">
-                       <div 
-                        className="text-[#8fa3bf] text-[15px] leading-relaxed max-w-4xl font-medium prose prose-invert opacity-80 line-clamp-2 group-hover:opacity-100 transition-opacity"
-                        dangerouslySetInnerHTML={{ __html: project.description }} 
-                      />
-                    </div>
+                      <div className="pt-2 border-t border-white/5">
+                        <RichTextRenderer
+                          content={project.description}
+                          className="admin-rich-preview text-[#8fa3bf] text-[15px] leading-relaxed max-w-4xl font-medium opacity-80 group-hover:opacity-100 transition-opacity"
+                        />
+                      </div>
                   </div>
                 </div>
 
@@ -560,7 +562,7 @@ function ProjectModal({ isOpen, onClose, onSave, entry }: { isOpen: boolean; onC
     }
 
     if (name === 'description') {
-      if (!value?.trim() || value === '<p><br></p>') error = "Don't leave us in the dark, describe it! 💡";
+      if (isRichTextBlank(value)) error = "Don't leave us in the dark, describe it! 💡";
     }
 
     if (name === 'tags') {

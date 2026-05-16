@@ -76,6 +76,10 @@ export async function GET() {
       descriptionHtml: (row.description_html || "").trim(),
       githubUrl: (row.github_url ?? "").trim(),
       demoUrl: (row.live_url ?? "").trim(),
+      images: images
+        .filter((img) => img.project_id === row.id)
+        .map((img) => (img.image_url ?? "").trim())
+        .filter(Boolean),
       image: images.find((img) => img.project_id === row.id)?.image_url || "",
       tech: tags
         .filter((tag) => tag.project_id === row.id)
@@ -91,4 +95,3 @@ export async function GET() {
     );
   }
 }
-
