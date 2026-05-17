@@ -1,36 +1,35 @@
 # Portfolio Admin Dashboard — Apon Kumar Das
 
-A protected admin dashboard for managing my Data Engineering portfolio content.
+A secure and database-driven admin dashboard for managing the content of my **Data Engineering Portfolio**.
 
----
-
-## Live Admin URL
-
-```txt
-https://apondas-data-engineer-portfolio.vercel.app/admin
-```
+This admin system is built to keep the portfolio dynamic, maintainable, and scalable without manually editing public-facing UI code for every content update.
 
 ---
 
 ## Overview
 
-The Admin Dashboard is used to create, update, and manage portfolio content stored in Supabase.
+The Admin Dashboard manages portfolio data stored in **Supabase** and supports authenticated content management for all major portfolio sections.
 
-It supports:
+It provides a clean workflow for creating, updating, deleting, and organizing portfolio content such as personal information, skills, projects, education, experience, certifications, resume files, and practice progress.
 
-- Admin login
-- Account recovery
-- Password update
-- Personal/About management
-- Education management
-- Experience management
-- Project management
-- Skill/category management
-- Certification management
-- Resume management
-- Practice dashboard management
-- Image/PDF upload handling
+---
+
+## Key Features
+
+- Supabase Auth based admin login
+- Account recovery and password update flow
+- Personal/About information management
+- Education records management
+- Experience records management
+- Project and tech stack management
+- Skill category and skill management
+- Certification and verification link management
+- Resume PDF management
+- Practice platform and solved problem tracking
+- Image, logo, and PDF upload support
+- Rich text editing for descriptions
 - Storage cleanup for replaced or deleted files
+- Protected admin-only workflows
 
 ---
 
@@ -40,124 +39,8 @@ It supports:
 React
 TypeScript
 Vite
+Tailwind CSS
 Supabase Auth
 Supabase Database
 Supabase Storage
-Tailwind CSS
 Rich Text Editor
-```
-
----
-
-## Main Components
-
-```txt
-Certifications.tsx
-Dashboard.tsx
-Education.tsx
-Experience.tsx
-FloatingTechIcons.tsx
-Login.tsx
-MultipleImageUpload.tsx
-Personal.tsx
-Practices.tsx
-Projects.tsx
-Resume.tsx
-RichTextEditor.tsx
-Sidebar.tsx
-Skills.tsx
-Slideshow.tsx
-Topbar.tsx
-```
-
----
-
-## Admin Routes
-
-```txt
-/admin
-/admin/login
-/admin/recovery
-/admin/update-password
-```
-
----
-
-## Supabase Tables Managed
-
-```txt
-admin_profiles
-about
-education
-education_media
-experience
-experience_media
-projects
-project_images
-project_tags
-skill_categories
-skills
-certifications
-resumes
-practice_platforms
-practice_challenges
-```
-
----
-
-## Storage Handling
-
-The admin dashboard should delete unused files when records are updated or deleted.
-
-Expected cleanup rules:
-
-```txt
-If an image/PDF is replaced:
-- Upload the new file
-- Delete the old file from Supabase Storage
-- Update the database row
-
-If a record is deleted:
-- Delete related files from Supabase Storage first
-- Then delete or soft-delete the database row
-
-If database update fails after upload:
-- Delete the newly uploaded file immediately
-```
-
----
-
-## Security Notes
-
-```txt
-Admin access uses Supabase Auth.
-Do not store passwords in custom tables.
-Do not expose service_role keys in frontend code.
-Use Row Level Security policies in Supabase.
-Keep .env.local out of GitHub.
-```
-
----
-
-## Environment Variables
-
-Required in the root app and Vercel:
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_or_publishable_key
-```
-
----
-
-## Purpose
-
-This admin dashboard allows me to keep my portfolio dynamic, maintainable, and database-driven without manually editing public-facing UI code for every content update.
-
----
-
-## Author
-
-**Apon Kumar Das**  
-Data Engineer  
-Dhaka, Bangladesh
