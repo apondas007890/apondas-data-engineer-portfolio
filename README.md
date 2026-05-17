@@ -8,7 +8,7 @@ A modern, dark-themed **Data Engineering Portfolio** built with modern full-stac
 ![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white)
 ![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
 
-This portfolio is designed to showcase my skills, projects, experience, education, certifications, practice progress, resume, and SQL-inspired interactive portfolio views.
+This repository represents my personal **Data Engineering portfolio platform**—a full-stack project designed to showcase my technical skills, projects, experience, certifications, and SQL-inspired portfolio interactions. It combines modern frontend design, Supabase-backed dynamic content, admin management workflows, and deployment-ready architecture to present my growth as a Data Engineer in a practical and professional way. 
 
 ---
 
@@ -228,8 +228,6 @@ The design is inspired by:
 ## 🌟 About Me
 
 Hi! I’m **Apon Kumar Das**, a tech enthusiast and aspiring **Data Engineer**. I’m passionate about **technology, data, and building robust data solutions**.  
-
-This repository represents my personal **Data Engineering portfolio platform**—a full-stack project designed to showcase my technical skills, projects, experience, certifications, and SQL-inspired portfolio interactions. It combines modern frontend design, Supabase-backed dynamic content, admin management workflows, and deployment-ready architecture to present my growth as a Data Engineer in a practical and professional way. 
 
 📚🌱 I’m eager to learn, grow, and connect with others in the data engineering community:  
 
