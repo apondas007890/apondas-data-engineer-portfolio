@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, createContext, useContext } from "react"
+import { useState, useCallback, createContext, useContext, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Topbar } from "@/components/sql-ide/topbar"
 import { Sidebar } from "@/components/sql-ide/sidebar"
@@ -46,6 +46,9 @@ export const useTheme = () => useContext(ThemeContext)
 
 export default function SQLIDEPage() {
   const router = useRouter()
+  useEffect(() => {
+    document.title = "SQL Shades | SSMS Portfolio"
+  }, [])
   const starterQueryTemplate = `SELECT * FROM Portfolio.about  -- Shows personal/about information
 SELECT * FORM Portfolio.skills -- Shows technical skills
 SELECT * FROM Portfolio.projects -- Shows portfolio projects

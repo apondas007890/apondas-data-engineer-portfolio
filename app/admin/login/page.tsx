@@ -56,6 +56,10 @@ export default function AdminLoginPage() {
   const [passwordError, setPasswordError] = useState<string | null>(null)
 
   useEffect(() => {
+    document.title = "Admin Login | Apon Kumar Das"
+  }, [])
+
+  useEffect(() => {
     const check = async () => {
       const result = await verifyAdminAccess()
       if (result.ok) {

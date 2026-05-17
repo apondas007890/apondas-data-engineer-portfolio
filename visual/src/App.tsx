@@ -41,6 +41,14 @@ export default function App() {
     requestAnimationFrame(() => scrollToSection(sectionId));
   }, []);
 
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    const pathname = window.location.pathname;
+    document.title = /\/visualportfolio\/contact\/?$/.test(pathname)
+      ? 'Contact | Apon Kumar Das'
+      : 'Visual Portfolio | Apon Kumar Das';
+  }, []);
+
   const currentSection = readSectionFromPath();
   const isContactRoute = currentSection === 'contact';
 

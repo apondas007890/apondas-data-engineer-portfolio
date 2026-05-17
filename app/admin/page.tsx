@@ -14,6 +14,10 @@ export default function AdminPage() {
   const [checking, setChecking] = useState(true)
 
   useEffect(() => {
+    document.title = "Portfolio Admin | Apon Kumar Das"
+  }, [])
+
+  useEffect(() => {
     let active = true
     const check = async () => {
       if (!active) return

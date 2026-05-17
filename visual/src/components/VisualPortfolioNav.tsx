@@ -16,6 +16,7 @@ const navItems = [
   { label: 'Certifications', id: 'certifications' },
   { label: 'Resume', id: 'resume' },
   { label: 'Contact', id: 'contact' },
+  { label: 'SSMS', id: 'ssms' },
 ];
 
 type SidebarProfile = {
@@ -68,6 +69,11 @@ function goToSection(sectionId: string, resumeUrl?: string) {
     if (url !== '#') {
       window.open(url, '_blank', 'noopener,noreferrer');
     }
+    return;
+  }
+
+  if (sectionId === 'ssms') {
+    window.location.href = '/';
     return;
   }
 
@@ -231,6 +237,8 @@ export function VisualPortfolioNav() {
                   const active =
                     item.id === 'contact' && onContactPage
                       ? true
+                      : item.id === 'ssms'
+                        ? false
                       : item.id === 'home'
                         ? activeSection === null || activeSection === 'home'
                         : activeSection === item.id;
@@ -283,6 +291,8 @@ export function VisualPortfolioNav() {
               const active =
                 item.id === 'contact' && onContactPage
                   ? true
+                  : item.id === 'ssms'
+                    ? false
                   : item.id === 'home'
                     ? activeSection === null || activeSection === 'home'
                     : activeSection === item.id;

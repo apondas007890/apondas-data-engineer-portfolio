@@ -1,6 +1,6 @@
 "use client"
 
-import { FormEvent, useState } from "react"
+import { FormEvent, useEffect, useState } from "react"
 import { CalendarDays, Mail, Phone, User } from "lucide-react"
 import { useRouter } from "next/navigation"
 import "@/admin/src/index.css"
@@ -62,6 +62,10 @@ export default function AdminRecoveryPage() {
     phoneNumber?: string
     dob?: string
   }>({})
+
+  useEffect(() => {
+    document.title = "Account Recovery | Apon Kumar Das"
+  }, [])
 
   const validateName = (v: string) =>
     !v.trim() ? "Tell us your full name for verification." : v.trim().length < 3 ? "Full name looks too short." : ""

@@ -41,11 +41,7 @@ export function HomeHero() {
         type="button"
         aria-label={isLight ? 'Switch to dark theme' : 'Switch to light theme'}
         onClick={toggleTheme}
-        className={`fixed right-4 top-10 z-40 flex h-12 w-12 items-center justify-center rounded-2xl border backdrop-blur-md transition sm:right-6 sm:top-16 sm:h-14 sm:w-14 ${
-          isLight
-            ? 'border-[rgba(24,28,27,0.12)] bg-[rgba(255,250,242,0.92)] shadow-[0_14px_28px_rgba(38,31,20,0.12)]'
-            : 'border-[rgba(255,255,255,0.08)] bg-[rgba(10,14,14,0.42)] shadow-[0_18px_36px_rgba(0,0,0,0.22)]'
-        }`}
+        className="fixed right-4 top-10 z-40 flex h-12 w-12 items-center justify-center rounded-2xl border border-transparent bg-transparent shadow-none backdrop-blur-0 transition-none sm:right-6 sm:top-16 sm:h-14 sm:w-14"
       >
         {isLight ? <MoonGlyph isLight={isLight} /> : <SunGlyph isLight={isLight} />}
       </button>

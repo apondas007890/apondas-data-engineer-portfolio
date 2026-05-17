@@ -55,6 +55,10 @@ export default function UpdatePasswordPage() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    document.title = "Account Recovery | Apon Kumar Das"
+  }, [])
+
+  useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!session) return
     })

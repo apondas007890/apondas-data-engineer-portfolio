@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { motion } from 'motion/react';
-import { ExternalLink, FolderGit2, Server, Database, BarChart3 } from 'lucide-react';
+import { ExternalLink, FolderGit2, Server, Database, BarChart3, Globe, Search, FileSpreadsheet, Table2, LineChart, PieChart } from 'lucide-react';
 import { FaGithub } from 'react-icons/fa';
 import {
   SiApachekafka,
@@ -12,6 +12,7 @@ import {
   SiPostman,
   SiPython,
   SiR,
+  SiRstudioide,
   SiSupabase,
 } from 'react-icons/si';
 import { PROJECTS } from '../constants/data';
@@ -44,14 +45,41 @@ const TECH_VISUALS: Record<string, TechVisual> = {
   kafka: { icon: SiApachekafka, color: '#EDE8DE' },
   mysql: { icon: SiMysql, color: '#4479A1' },
   r: { icon: SiR, color: '#276DC3' },
+  rstudio: { icon: SiRstudioide, color: '#75AADB' },
   json: { icon: SiJson, color: '#F0DB4F' },
   supabase: { icon: SiSupabase, color: '#3ECF8E' },
   database: { icon: Database, color: '#8B9495' },
   backend: { icon: Server, color: '#8BA7C6' },
   analytics: { icon: BarChart3, color: '#D1B46F' },
+  sql: { icon: Table2, color: '#75C9FF' },
+  excel: { icon: FileSpreadsheet, color: '#217346' },
+  'power bi': { icon: PieChart, color: '#F2C811' },
+  scraping: { icon: Search, color: '#00C2D1' },
+  scraper: { icon: Search, color: '#00C2D1' },
+  'web scraper': { icon: Globe, color: '#33C3F0' },
+  'data cleaning': { icon: FileSpreadsheet, color: '#8FD17F' },
+  'descriptive statistics': { icon: LineChart, color: '#D6BE73' },
 };
 
 const normalizeTechKey = (tech: string) => tech.trim().toLowerCase();
+
+const resolveTechVisual = (tech: string): TechVisual | null => {
+  const key = normalizeTechKey(tech);
+  if (TECH_VISUALS[key]) return TECH_VISUALS[key];
+  if (key.includes('rstudio')) return TECH_VISUALS.rstudio;
+  if (key.includes('web scraper')) return TECH_VISUALS['web scraper'];
+  if (key.includes('scraper')) return TECH_VISUALS.scraper;
+  if (key.includes('scrap')) return TECH_VISUALS.scraping;
+  if (key.includes('power bi')) return TECH_VISUALS['power bi'];
+  if (key.includes('excel')) return TECH_VISUALS.excel;
+  if (key.includes('statistics')) return TECH_VISUALS['descriptive statistics'];
+  if (key.includes('clean')) return TECH_VISUALS['data cleaning'];
+  if (key.includes('sql')) return TECH_VISUALS.sql;
+  if (key.includes('analytic')) return TECH_VISUALS.analytics;
+  if (key.includes('database')) return TECH_VISUALS.database;
+  if (key.includes('backend')) return TECH_VISUALS.backend;
+  return null;
+};
 
 const normalizeExternalUrl = (url: string) => {
   const value = (url || '').trim();
@@ -218,7 +246,7 @@ export const Projects = () => {
                   <div className="mt-5 flex flex-wrap gap-2.5">
                     {project.tech.map((tech) => (
                       (() => {
-                        const visual = TECH_VISUALS[normalizeTechKey(tech)];
+                        const visual = resolveTechVisual(tech);
                         const Icon = visual?.icon;
 
                         return (

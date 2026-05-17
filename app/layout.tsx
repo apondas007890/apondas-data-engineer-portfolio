@@ -1,32 +1,34 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import Script from 'next/script'
 import './globals.css'
 
 const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'SQL Server Management Studio',
-  description: 'Interactive SQL IDE Interface',
-  generator: 'v0.app',
+  title: 'Apon Kumar Das | Data Engineer',
+  description:
+    'Data Engineer portfolio of Apon Kumar Das, showcasing data projects, skills, experience, certifications, and SQL-inspired portfolio experiences.',
+  manifest: '/manifest.json',
   icons: {
     icon: [
       {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
+        url: '/favicon.ico',
       },
       {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
+        url: '/icon.png',
+        type: 'image/png',
       },
       {
-        url: '/icon.svg',
+        url: '/favicon.svg',
         type: 'image/svg+xml',
       },
     ],
-    apple: '/apple-icon.png',
+    apple: '/apple-touch-icon.png',
   },
+  applicationName: 'Apon Kumar Das Portfolio',
 }
 
 export default function RootLayout({
@@ -37,6 +39,23 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark bg-[#2d2d30]">
       <body className="bg-[#2d2d30] font-mono antialiased overflow-x-hidden">
+        <Script
+          id="route-title-bootstrap"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function () {
+                var p = window.location.pathname;
+                var t = 'Apon Kumar Das | Data Engineer';
+                if (p === '/') t = 'SQL Shades | SSMS Portfolio';
+                else if (/^\\/admin\\/?$/.test(p)) t = 'Portfolio Admin | Apon Kumar Das';
+                else if (/^\\/admin\\/login\\/?$/.test(p)) t = 'Admin Login | Apon Kumar Das';
+                else if (/^\\/admin\\/(recovery|update-password)\\/?$/.test(p)) t = 'Account Recovery | Apon Kumar Das';
+                document.title = t;
+              })();
+            `,
+          }}
+        />
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
