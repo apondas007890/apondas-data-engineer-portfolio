@@ -1,6 +1,12 @@
 # Apon Kumar Das — Data Engineer Portfolio 🚀
 
-A modern, dark-themed **Data Engineering Portfolio** built with **Next.js, React, TypeScript, Supabase, and Vercel**.
+A modern, dark-themed **Data Engineering Portfolio** built with modern full-stack tools.
+
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
 
 This portfolio is designed to showcase my skills, projects, experience, education, certifications, practice progress, resume, and SQL-inspired interactive portfolio views.
 
@@ -74,20 +80,6 @@ This portfolio has three major experiences:
 - Vercel
 
 ---
-
-## 🧭 Main Routes
-
-```txt
-/                         → SQL Shades / main portfolio workspace
-/visualportfolio          → Visual Portfolio
-/visualportfolio/contact  → Visual Contact Page
-/admin                    → Admin Dashboard
-/admin/login              → Admin Login
-/admin/recovery           → Account Recovery
-/admin/update-password    → Password Update
-/auth/callback            → Supabase Auth Callback
-/test-supabase            → Supabase Test Page
-```
 
 ---
 
@@ -205,34 +197,6 @@ Storage file paths are saved in database columns so unused images and PDFs can b
 
 ---
 
-## 🔐 Security
-
-- Admin access uses Supabase Auth.
-- Public users can read public portfolio data.
-- Admin users can manage portfolio records.
-- Row Level Security should be enabled on Supabase tables.
-- `.env.local` must never be pushed to GitHub.
-- Supabase `service_role` key must never be used in frontend code.
-- Storage files should be deleted when related records are deleted or replaced.
-
----
-
-## 🔑 Environment Variables
-
-Create a `.env.local` file in the project root.
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_or_publishable_key
-NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY=your_web3forms_access_key
-```
-
-For Vercel, add the same variables in:
-
-```txt
-Vercel → Project Settings → Environment Variables
-```
-
 ---
 
 ## 🎨 Design System
@@ -258,102 +222,18 @@ The design is inspired by:
 
 ---
 
-## 💻 Local Development
-
-Install dependencies:
-
-```bash
-npm install
-```
-
-Run development server:
-
-```bash
-npm run dev
-```
-
-Open locally:
-
-```txt
-http://localhost:3000
-```
-
-Build locally:
-
-```bash
-npm run build
-```
-
-Start production build:
-
-```bash
-npm start
-```
 
 ---
 
-## 🚀 Deployment
+## 🌟 About Me
 
-This project is deployed with **Vercel** and connected to GitHub.
+Hi! I’m **Apon Kumar Das**, a tech enthusiast and aspiring **Data Engineer**. I’m passionate about **technology, data, and building robust data solutions**.  
 
-Normal deployment flow:
+This repository represents my personal **Data Engineering portfolio platform**—a full-stack project designed to showcase my technical skills, projects, experience, certifications, and SQL-inspired portfolio interactions. It combines modern frontend design, Supabase-backed dynamic content, admin management workflows, and deployment-ready architecture to present my growth as a Data Engineer in a practical and professional way. 
 
-```bash
-git add -A
-git commit -m "Update portfolio"
-git push
-```
+📚🌱 I’m eager to learn, grow, and connect with others in the data engineering community:  
 
-Vercel automatically redeploys after pushing to the `main` branch.
-
----
-
-## 🧪 Git Workflow
-
-Check status:
-
-```bash
-git status
-```
-
-Stage all changes:
-
-```bash
-git add -A
-```
-
-Commit:
-
-```bash
-git commit -m "Update portfolio"
-```
-
-Push:
-
-```bash
-git push
-```
-
-If push is rejected because remote has newer work:
-
-```bash
-git pull --rebase origin main
-git push
-```
-
----
-
-## 👨‍💻 Author
-
-**Apon Kumar Das**  
-Data Engineer  
-Dhaka, Bangladesh
-
-```txt
-Email: apondas007890@gmail.com
-GitHub: apondas007890
-LinkedIn: apondas0090
-```
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/apon-kumar-das-47087a332)  [![Portfolio](https://img.shields.io/badge/Portfolio-FF6F61?style=for-the-badge&logo=internet-explorer&logoColor=white)](https://apondas-data-engineer-portfolio.vercel.app)
 
 ---
 
@@ -361,4 +241,4 @@ LinkedIn: apondas0090
 
 This project is for personal portfolio use.
 
-© 2026–Present Apon Kumar Das. All rights reserved.
+© 2026 AP. All rights reserved.
