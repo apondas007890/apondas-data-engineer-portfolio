@@ -11,13 +11,11 @@ This portfolio represents my identity as a **Data Engineer** — focused on reli
 🚀 **Live Website:**  
 https://apondas-data-engineer-portfolio.vercel.app
 
-> If your Vercel domain is different, replace the link above with your actual Vercel live URL.
 
 ---
 
 ## About This Portfolio
 
-I build reliable data pipelines, clean analytical datasets, and scalable data systems that turn raw information into trusted insight.
 
 This portfolio has two major experiences:
 
