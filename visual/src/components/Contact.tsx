@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { motion } from 'motion/react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
 import { Send } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
@@ -94,6 +94,15 @@ export function Contact({ standalone = false }: { standalone?: boolean }) {
   const [sending, setSending] = useState(false);
   const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
+  useEffect(() => {
+    if (!status) return;
+    const timer = window.setTimeout(() => {
+      setStatus(null);
+    }, 3200);
+
+    return () => window.clearTimeout(timer);
+  }, [status]);
+
   const errors = useMemo<ContactErrors>(
     () => ({
       name: validateName(values.name),
@@ -166,15 +175,23 @@ export function Contact({ standalone = false }: { standalone?: boolean }) {
     setSending(true);
 
     try {
+      const formattedMessage = [
+        'New Visual Portfolio Contact',
+        '',
+        `Name: ${values.name.trim()}`,
+        `Email: ${values.email.trim()}`,
+        'Source: Visual Portfolio',
+        '',
+        'Message:',
+        values.message.trim(),
+      ].join('\n');
+
       const payload = {
         access_key: WEB3FORMS_ACCESS_KEY,
-        name: values.name.trim(),
-        email: values.email.trim(),
-        message: values.message.trim(),
+        message: formattedMessage,
         subject: `New visual portfolio message from ${values.name.trim()}`,
-        from_name: `${values.name.trim()} via Visual Portfolio`,
+        from_name: 'Apon Kumar Das Portfolio',
         replyto: values.email.trim(),
-        source: 'Visual Portfolio Contact',
         botcheck: values.botcheck,
       };
 
@@ -209,6 +226,29 @@ export function Contact({ standalone = false }: { standalone?: boolean }) {
       id="contact"
       className={`${standalone ? 'contact-section px-5 sm:px-8 lg:pl-[170px] lg:pr-10' : 'section-padding'} relative`}
     >
+      {standalone ? (
+        <AnimatePresence>
+          {status ? (
+            <motion.div
+              key="visual-contact-toast"
+              initial={{ opacity: 0, x: 28 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 24 }}
+              transition={{ duration: 0.24, ease: 'easeOut' }}
+              className="visual-contact-toast"
+              role="status"
+            >
+              <span
+                className={`visual-contact-toast-dot ${
+                  status.type === 'success' ? 'is-success' : 'is-error'
+                }`}
+              />
+              <span>{status.message}</span>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+      ) : null}
+
       {standalone ? (
         <button
           type="button"
@@ -319,17 +359,6 @@ export function Contact({ standalone = false }: { standalone?: boolean }) {
                   <Send size={18} />
                   <span>{sending ? 'Sending...' : 'Send message'}</span>
                 </button>
-
-                {status ? (
-                  <p
-                    className={`text-sm font-semibold ${
-                      status.type === 'success' ? 'text-[#25D366]' : 'text-[#ff6b6b]'
-                    }`}
-                    role="status"
-                  >
-                    {status.message}
-                  </p>
-                ) : null}
               </div>
             </form>
 

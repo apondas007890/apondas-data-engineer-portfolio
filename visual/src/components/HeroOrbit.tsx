@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Icon } from '@iconify/react';
 import { Code2 } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 
 type RingId = 1 | 2 | 3 | 4 | 5;
 
@@ -240,6 +241,8 @@ function useReducedMotionPreference() {
 }
 
 export function HeroOrbit() {
+  const { theme } = useTheme();
+  const isLight = theme === 'light';
   const [viewport, setViewport] = useState({ width: 0, height: 0 });
   const [items, setItems] = useState<OrbitItem[]>([]);
   const animationFrameRef = useRef<number | null>(null);
@@ -330,16 +333,28 @@ export function HeroOrbit() {
 
   if (viewport.width === 0 || viewport.height === 0) return null;
 
+  const ringStrokeFor = (config: RingConfig, ringIndex: number) =>
+    isLight
+      ? ringIndex % 2 === 0
+        ? 'rgba(0, 133, 149, 0.13)'
+        : 'rgba(56, 69, 71, 0.1)'
+      : config.stroke;
+
+  const pillBorder = isLight ? 'rgba(26, 33, 32, 0.14)' : 'rgba(0,238,255,0.24)';
+  const pillHoverBorder = isLight ? 'rgba(0, 133, 149, 0.26)' : 'rgba(0,238,255,0.36)';
+  const pillBackground = isLight ? 'rgba(255, 250, 242, 0.92)' : 'rgba(12,14,15,0.8)';
+  const pillText = isLight ? '#1a2120' : '#f5f5f5';
+
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
       <svg className="absolute inset-0 h-full w-full" fill="none" aria-hidden="true">
-        {(Object.entries(ringConfig) as Array<[string, RingConfig]>).map(([ringKey, config]) => (
+        {(Object.entries(ringConfig) as Array<[string, RingConfig]>).map(([ringKey, config], index) => (
           <circle
             key={ringKey}
             cx={centerX}
             cy={centerY}
             r={config.radius}
-            stroke={config.stroke}
+            stroke={ringStrokeFor(config, index)}
             strokeWidth={config.strokeWidth}
           />
         ))}
@@ -360,7 +375,19 @@ export function HeroOrbit() {
             willChange: reducedMotion ? 'auto' : 'transform, opacity',
           }}
         >
-          <div className="flex items-center gap-2.5 rounded-full border border-[rgba(0,238,255,0.24)] bg-[rgba(12,14,15,0.8)] px-3 py-1.5 backdrop-blur-[8px] transition-transform duration-200 hover:scale-[1.04] hover:border-[rgba(0,238,255,0.36)]">
+          <div
+            className="flex items-center gap-2.5 rounded-full border px-3 py-1.5 backdrop-blur-[8px] transition-transform duration-200 hover:scale-[1.04]"
+            style={{
+              borderColor: pillBorder,
+              background: pillBackground,
+            }}
+            onMouseEnter={(event) => {
+              event.currentTarget.style.borderColor = pillHoverBorder;
+            }}
+            onMouseLeave={(event) => {
+              event.currentTarget.style.borderColor = pillBorder;
+            }}
+          >
             <span className="flex h-7 w-7 items-center justify-center">
               {pill.imageSrc ? (
                 <img
@@ -378,10 +405,10 @@ export function HeroOrbit() {
                   style={pill.color ? { color: pill.color } : undefined}
                 />
               ) : (
-                <Code2 size={16} color="#f5f5f5" />
+                <Code2 size={16} color={pillText} />
               )}
             </span>
-            <span className="whitespace-nowrap text-[10px] font-bold uppercase tracking-[0.12em] text-[#f5f5f5]">
+            <span className="whitespace-nowrap text-[10px] font-bold uppercase tracking-[0.12em]" style={{ color: pillText }}>
               {pill.label}
             </span>
           </div>

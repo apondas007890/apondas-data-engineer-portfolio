@@ -17,6 +17,7 @@ import {
 import { PROJECTS } from '../constants/data';
 import { MediaThumb } from './MediaThumb';
 import RichTextRenderer from './RichTextRenderer';
+import { useTheme } from '../context/ThemeContext';
 
 type DbProject = {
   id: string;
@@ -60,6 +61,8 @@ const normalizeExternalUrl = (url: string) => {
 };
 
 export const Projects = () => {
+  const { theme } = useTheme();
+  const isLight = theme === 'light';
   const [dbProjects, setDbProjects] = useState<DbProject[] | null>(null);
 
   useEffect(() => {
@@ -150,8 +153,18 @@ export const Projects = () => {
                       imgClassName="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
                     />
 
-                    <div className="absolute inset-0 bg-[#040606]/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#040606]/88 via-[#040606]/42 to-transparent opacity-45 transition-opacity duration-300 group-hover:opacity-100" />
+                    <div
+                      className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                      style={{ background: isLight ? 'rgba(248, 241, 229, 0.16)' : 'rgba(4, 6, 6, 0.2)' }}
+                    />
+                    <div
+                      className="absolute inset-0 opacity-45 transition-opacity duration-300 group-hover:opacity-100"
+                      style={{
+                        background: isLight
+                          ? 'linear-gradient(to top, rgba(248,241,229,0.92), rgba(248,241,229,0.42), transparent)'
+                          : 'linear-gradient(to top, rgba(4,6,6,0.88), rgba(4,6,6,0.42), transparent)',
+                      }}
+                    />
 
                     <div className="absolute bottom-4 right-4 flex items-center gap-2 opacity-0 translate-y-3 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
                       {project.githubUrl !== '#' ? (
@@ -160,7 +173,14 @@ export const Projects = () => {
                           target="_blank"
                           rel="noopener noreferrer"
                           aria-label={`${project.title} GitHub repository`}
-                          className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/12 bg-[#090c0d]/84 text-text-primary shadow-[0_10px_24px_rgba(0,0,0,0.28)] backdrop-blur-md transition duration-300 hover:-translate-y-0.5 hover:border-accent-gold hover:text-accent-gold"
+                          className="inline-flex h-9 w-9 items-center justify-center rounded-full border text-text-primary backdrop-blur-md transition duration-300 hover:-translate-y-0.5 hover:border-accent-gold hover:text-accent-gold"
+                          style={{
+                            borderColor: isLight ? 'rgba(24, 28, 27, 0.12)' : 'rgba(255,255,255,0.12)',
+                            background: isLight ? 'rgba(255, 250, 242, 0.94)' : 'rgba(9, 12, 13, 0.84)',
+                            boxShadow: isLight
+                              ? '0 10px 24px rgba(38,31,20,0.12)'
+                              : '0 10px 24px rgba(0,0,0,0.28)',
+                          }}
                         >
                           <FaGithub size={15} />
                         </a>
@@ -172,7 +192,14 @@ export const Projects = () => {
                           target="_blank"
                           rel="noopener noreferrer"
                           aria-label={`${project.title} live demo`}
-                          className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/12 bg-[#090c0d]/84 text-text-primary shadow-[0_10px_24px_rgba(0,0,0,0.28)] backdrop-blur-md transition duration-300 hover:-translate-y-0.5 hover:border-accent-gold hover:text-accent-gold"
+                          className="inline-flex h-9 w-9 items-center justify-center rounded-full border text-text-primary backdrop-blur-md transition duration-300 hover:-translate-y-0.5 hover:border-accent-gold hover:text-accent-gold"
+                          style={{
+                            borderColor: isLight ? 'rgba(24, 28, 27, 0.12)' : 'rgba(255,255,255,0.12)',
+                            background: isLight ? 'rgba(255, 250, 242, 0.94)' : 'rgba(9, 12, 13, 0.84)',
+                            boxShadow: isLight
+                              ? '0 10px 24px rgba(38,31,20,0.12)'
+                              : '0 10px 24px rgba(0,0,0,0.28)',
+                          }}
                         >
                           <ExternalLink size={15} />
                         </a>
@@ -197,7 +224,11 @@ export const Projects = () => {
                         return (
                           <span
                             key={tech}
-                            className="inline-flex items-center gap-2 rounded-full border border-white/8 bg-white/[0.03] px-3 py-1.5 text-[11px] font-bold tracking-[0.01em] text-text-secondary"
+                            className="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[11px] font-bold tracking-[0.01em] text-text-secondary"
+                            style={{
+                              borderColor: isLight ? 'rgba(24, 28, 27, 0.1)' : 'rgba(255,255,255,0.08)',
+                              background: isLight ? 'rgba(24, 28, 27, 0.035)' : 'rgba(255,255,255,0.03)',
+                            }}
                           >
                             {Icon ? <Icon size={14} style={{ color: visual.color }} /> : null}
                             <span>{tech}</span>

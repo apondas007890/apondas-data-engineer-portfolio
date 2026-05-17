@@ -2,7 +2,9 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import { FaGithub, FaLinkedin } from 'react-icons/fa';
 import { IoLogoWhatsapp } from 'react-icons/io';
+import { Menu, X } from 'lucide-react';
 import { useActiveSection } from '../hooks/useActiveSection';
+import { useTheme } from '../context/ThemeContext';
 
 const navItems = [
   { label: 'Home', id: 'home' },
@@ -98,11 +100,14 @@ const normalizeWhatsAppUrl = (value: string) => {
 
 export function VisualPortfolioNav() {
   const reduceMotion = useReducedMotion();
+  const { theme } = useTheme();
+  const isLight = theme === 'light';
   const activeSection = useActiveSection(allIds, 170);
   const pathname = typeof window !== 'undefined' ? window.location.pathname : '/visualportfolio';
   const onContactPage = /\/visualportfolio\/contact\/?$/.test(pathname);
   const [profile, setProfile] = useState<SidebarProfile | null>(null);
   const [resumeUrl, setResumeUrl] = useState('#');
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -183,64 +188,152 @@ export function VisualPortfolioNav() {
     [profile],
   );
 
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setMobileOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [mobileOpen]);
+
   return (
-    <aside className="visual-sidebar pointer-events-none hidden sm:flex">
-      <div className="visual-sidebar-inner pointer-events-auto">
-        <div className="visual-nav-links">
-          {navItems.map((item, index) => {
-            const active =
-              item.id === 'contact' && onContactPage
-                ? true
-                : item.id === 'home'
-                ? activeSection === null || activeSection === 'home'
-                : activeSection === item.id;
+    <>
+      <div className="visual-mobile-nav sm:hidden">
+        <button
+          type="button"
+          aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          onClick={() => setMobileOpen((current) => !current)}
+          className={`visual-mobile-nav-toggle ${mobileOpen ? 'is-open' : ''} ${isLight ? 'is-light' : ''}`}
+        >
+          {mobileOpen ? <X size={18} /> : <Menu size={18} />}
+        </button>
 
-            return (
-              <motion.button
-                key={item.id}
-                type="button"
-                onClick={() => goToSection(item.id, resumeUrl)}
-                initial={reduceMotion ? false : { opacity: 0, x: -10 }}
-                animate={reduceMotion ? undefined : { opacity: 1, x: 0 }}
-                transition={
-                  reduceMotion
-                    ? undefined
-                    : {
-                        duration: 0.26,
-                        delay: index * 0.028,
-                        ease: [0.22, 1, 0.36, 1],
-                      }
-                }
-                className={`visual-nav-link ${active ? 'active' : ''}`}
-                aria-label={item.id === 'resume' ? 'Open resume in new tab' : item.label}
-              >
-                <span className="visual-nav-link-text">{item.label}</span>
-              </motion.button>
-            );
-          })}
-        </div>
+        {mobileOpen ? (
+          <>
+            <button
+              type="button"
+              aria-label="Close navigation overlay"
+              className="visual-mobile-nav-backdrop"
+              onClick={() => setMobileOpen(false)}
+            />
+            <div className={`visual-mobile-nav-panel ${isLight ? 'is-light' : ''}`}>
+              <div className="visual-mobile-nav-links">
+                {navItems.map((item) => {
+                  const active =
+                    item.id === 'contact' && onContactPage
+                      ? true
+                      : item.id === 'home'
+                        ? activeSection === null || activeSection === 'home'
+                        : activeSection === item.id;
 
-        <div className="visual-social-links">
-          {socialItems.map((item) => (
-            <a
-              key={item.label}
-              href={item.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={item.label}
-              className="visual-social-link"
-              style={
-                {
-                  '--social-hover': item.hoverColor,
-                  '--social-hover-bg': item.hoverBg,
-                } as React.CSSProperties
-              }
-            >
-              <item.Icon />
-            </a>
-          ))}
-        </div>
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => {
+                        goToSection(item.id, resumeUrl);
+                        setMobileOpen(false);
+                      }}
+                      className={`visual-mobile-nav-link ${active ? 'active' : ''}`}
+                    >
+                      {item.label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="visual-mobile-social-links">
+                {socialItems.map((item) => (
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={item.label}
+                    className="visual-mobile-social-link"
+                    style={
+                      {
+                        '--social-hover': item.hoverColor,
+                        '--social-hover-bg': item.hoverBg,
+                      } as React.CSSProperties
+                    }
+                  >
+                    <item.Icon />
+                  </a>
+                ))}
+              </div>
+            </div>
+          </>
+        ) : null}
       </div>
-    </aside>
+
+      <aside className="visual-sidebar pointer-events-none hidden sm:flex">
+        <div className="visual-sidebar-inner pointer-events-auto">
+          <div className="visual-nav-links">
+            {navItems.map((item, index) => {
+              const active =
+                item.id === 'contact' && onContactPage
+                  ? true
+                  : item.id === 'home'
+                    ? activeSection === null || activeSection === 'home'
+                    : activeSection === item.id;
+
+              return (
+                <motion.button
+                  key={item.id}
+                  type="button"
+                  onClick={() => goToSection(item.id, resumeUrl)}
+                  initial={reduceMotion ? false : { opacity: 0, x: -10 }}
+                  animate={reduceMotion ? undefined : { opacity: 1, x: 0 }}
+                  transition={
+                    reduceMotion
+                      ? undefined
+                      : {
+                          duration: 0.26,
+                          delay: index * 0.028,
+                          ease: [0.22, 1, 0.36, 1],
+                        }
+                  }
+                  className={`visual-nav-link ${active ? 'active' : ''}`}
+                  aria-label={item.id === 'resume' ? 'Open resume in new tab' : item.label}
+                >
+                  <span className="visual-nav-link-text">{item.label}</span>
+                </motion.button>
+              );
+            })}
+          </div>
+
+          <div className="visual-social-links">
+            {socialItems.map((item) => (
+              <a
+                key={item.label}
+                href={item.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={item.label}
+                className="visual-social-link"
+                style={
+                  {
+                    '--social-hover': item.hoverColor,
+                    '--social-hover-bg': item.hoverBg,
+                  } as React.CSSProperties
+                }
+              >
+                <item.Icon />
+              </a>
+            ))}
+          </div>
+        </div>
+      </aside>
+    </>
   );
 }

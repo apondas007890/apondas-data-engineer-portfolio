@@ -840,15 +840,23 @@ function SqlShadesRow() {
     try {
       setIsContactSending(true)
 
+      const formattedMessage = [
+        "New SQL-IDE Contact",
+        "",
+        `Name: ${contactName.trim()}`,
+        `Email: ${contactEmail.trim()}`,
+        "Source: SQL-IDE",
+        "",
+        "Message:",
+        contactMessage.trim(),
+      ].join("\n")
+
       const payload = {
         access_key: web3FormsAccessKey,
-        name: contactName.trim(),
-        email: contactEmail.trim(),
-        message: contactMessage.trim(),
+        message: formattedMessage,
         subject: `New SQL-IDE message from ${contactName.trim()}`,
-        from_name: `${contactName.trim()} via SQL-IDE`,
+        from_name: "Apon Kumar Das Portfolio",
         replyto: contactEmail.trim(),
-        source: "SQL-IDE Contact",
         botcheck: "",
       }
 
@@ -868,12 +876,12 @@ function SqlShadesRow() {
         throw new Error(result.message || "Web3Forms submit failed")
       }
 
-      resetContactState()
-      setIsContactOpen(false)
-      setContactToast({
-        type: "success",
-        message: "Message sent successfully. I’ll reply soon.",
-      })
+        resetContactState()
+        setIsContactOpen(false)
+        setContactToast({
+          type: "success",
+          message: "Message sent successfully.",
+        })
     } catch (error) {
       console.error("SQL-IDE contact submit error:", error)
       setContactToast({

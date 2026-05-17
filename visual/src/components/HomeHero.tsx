@@ -35,26 +35,30 @@ export function HomeHero() {
   return (
     <section
       id="home"
-      className="relative min-h-screen overflow-hidden px-6 pb-12 pt-20 sm:px-10 lg:px-16 xl:px-20"
+      className="relative min-h-screen overflow-hidden px-5 pb-10 pt-20 sm:px-10 lg:px-16 xl:px-20"
     >
       <button
         type="button"
         aria-label={isLight ? 'Switch to dark theme' : 'Switch to light theme'}
         onClick={toggleTheme}
-        className="fixed right-4 top-12 z-40 flex h-14 w-14 items-center justify-center rounded-2xl border border-transparent bg-transparent shadow-none backdrop-blur-0 transition-none sm:right-6 sm:top-16"
+        className={`fixed right-4 top-10 z-40 flex h-12 w-12 items-center justify-center rounded-2xl border backdrop-blur-md transition sm:right-6 sm:top-16 sm:h-14 sm:w-14 ${
+          isLight
+            ? 'border-[rgba(24,28,27,0.12)] bg-[rgba(255,250,242,0.92)] shadow-[0_14px_28px_rgba(38,31,20,0.12)]'
+            : 'border-[rgba(255,255,255,0.08)] bg-[rgba(10,14,14,0.42)] shadow-[0_18px_36px_rgba(0,0,0,0.22)]'
+        }`}
       >
         {isLight ? <MoonGlyph isLight={isLight} /> : <SunGlyph isLight={isLight} />}
       </button>
 
       <HeroOrbit />
 
-      <div className="relative z-10 flex min-h-[calc(100vh-5rem)] items-center">
-        <div className="ml-[6vw] w-full max-w-[760px] space-y-8 sm:ml-[8vw] lg:ml-[10vw] xl:ml-[11vw]">
+      <div className="relative z-10 flex min-h-[calc(100svh-4.5rem)] items-center sm:min-h-[calc(100vh-5rem)]">
+        <div className="mx-auto w-full max-w-[22rem] space-y-6 text-center sm:ml-[8vw] sm:mr-0 sm:max-w-[760px] sm:space-y-8 sm:text-left lg:ml-[10vw] xl:ml-[11vw]">
           <div className="space-y-5">
             <div className="relative inline-flex overflow-hidden">
               <p
                 aria-label={name}
-                className="text-[18px] font-extrabold uppercase tracking-[0.38em] sm:text-[22px]"
+                className="text-[13px] font-extrabold uppercase tracking-[0.28em] sm:text-[22px] sm:tracking-[0.38em]"
                 style={{ color: isLight ? '#a3823d' : '#d6be73' }}
               >
                 {letters.map((letter, index) => (
@@ -129,12 +133,12 @@ export function HomeHero() {
                         ease: [0.22, 1, 0.36, 1],
                       }
                 }
-                className="whitespace-nowrap font-serif text-[3.3rem] font-bold leading-[0.92] tracking-[-0.02em] text-[#f5f5f5] sm:text-[4.5rem] lg:text-[5.6rem] xl:text-[6.3rem]"
+                className="whitespace-nowrap font-serif text-[2.15rem] font-bold leading-[0.9] tracking-[-0.04em] text-[#f5f5f5] sm:text-[4.5rem] lg:text-[5.6rem] xl:text-[6.3rem]"
               >
                 <span style={{ color: isLight ? '#1b201e' : '#f5f5f5' }}>Data </span>
                 <span style={{ color: isLight ? '#008595' : '#00eeff' }}>Engineer</span>
               </motion.h1>
-              <div className="relative mt-[0.18em] h-[18px] w-[96%]">
+              <div className="relative mt-[0.18em] h-[16px] w-full sm:w-[96%]">
                 <motion.div
                   initial={reduceMotion ? false : { scaleX: 0, opacity: 0 }}
                   animate={reduceMotion ? undefined : { scaleX: 1, opacity: 1 }}

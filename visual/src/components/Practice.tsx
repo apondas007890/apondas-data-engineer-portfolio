@@ -4,6 +4,7 @@ import { ExternalLink } from 'lucide-react';
 import { SiCodechef, SiHackerrank, SiLeetcode } from 'react-icons/si';
 import { ChartColumn } from 'lucide-react';
 import { PRACTICE_STATS } from '../constants/data';
+import { useTheme } from '../context/ThemeContext';
 
 const difficultyColors = {
   easy: '#36D97F',
@@ -75,6 +76,8 @@ const getPlatformMeta = (name: string) => {
 };
 
 export const Practice = () => {
+  const { theme } = useTheme();
+  const isLight = theme === 'light';
   const [dbPractice, setDbPractice] = useState<PracticePayload | null>(null);
 
   useEffect(() => {
@@ -222,7 +225,14 @@ export const Practice = () => {
                   { label: 'Medium', value: totals.medium, color: difficultyColors.medium },
                   { label: 'Hard', value: totals.hard, color: difficultyColors.hard },
                 ].map((item) => (
-                  <div key={item.label} className="rounded-2xl border border-white/8 bg-white/[0.03] p-4">
+                  <div
+                    key={item.label}
+                    className="rounded-2xl border p-4"
+                    style={{
+                      borderColor: isLight ? 'rgba(24, 28, 27, 0.1)' : 'rgba(255,255,255,0.08)',
+                      background: isLight ? 'rgba(24, 28, 27, 0.03)' : 'rgba(255,255,255,0.03)',
+                    }}
+                  >
                     <div className="mb-3 flex items-center gap-2">
                       <span className="h-2.5 w-2.5 rounded-full" style={{ background: item.color }} />
                       <p className="text-[10px] font-extrabold uppercase tracking-[0.22em] text-text-muted">
@@ -301,9 +311,16 @@ export const Practice = () => {
                   { label: 'Easy', value: platform.easy, color: difficultyColors.easy },
                   { label: 'Medium', value: platform.medium, color: difficultyColors.medium },
                   { label: 'Hard', value: platform.hard, color: difficultyColors.hard },
-                  { label: 'Total', value: platform.total, color: '#F2EDE4' },
+                  { label: 'Total', value: platform.total, color: isLight ? '#1a2120' : '#F2EDE4' },
                 ].map((item) => (
-                  <div key={item.label} className="rounded-2xl border border-white/8 bg-white/[0.03] p-4">
+                  <div
+                    key={item.label}
+                    className="rounded-2xl border p-4"
+                    style={{
+                      borderColor: isLight ? 'rgba(24, 28, 27, 0.1)' : 'rgba(255,255,255,0.08)',
+                      background: isLight ? 'rgba(24, 28, 27, 0.03)' : 'rgba(255,255,255,0.03)',
+                    }}
+                  >
                     <p className="text-[10px] font-extrabold uppercase tracking-[0.22em] text-text-muted">
                       {item.label}
                     </p>

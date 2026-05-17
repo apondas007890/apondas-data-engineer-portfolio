@@ -80,8 +80,7 @@ export const Education = () => {
           viewport={{ once: true }}
           className="mb-12 text-center"
         >
-          
-          <h2 className="text-3xl font-bold tracking-tight md:text-5xl">Education</h2>
+          <h2 className="text-[2rem] font-bold tracking-tight sm:text-3xl md:text-5xl">Education</h2>
         </motion.div>
 
         <div className="grid gap-5">
@@ -94,25 +93,25 @@ export const Education = () => {
               transition={{ delay: index * 0.07 }}
               className="glass-card p-4 sm:p-5"
             >
-              <div className="grid gap-5 lg:grid-cols-[190px_minmax(0,1fr)] lg:items-center">
+              <div className="grid gap-4 sm:gap-5 lg:grid-cols-[190px_minmax(0,1fr)] lg:items-center">
                 <MediaThumb
                   src={edu.image}
                   images={edu.images}
                   alt={edu.imageAlt || edu.institution}
                   icon={edu.icon || Award}
                   label={edu.institution}
-                  className="h-40 overflow-hidden rounded-[30px] border border-border-subtle bg-app-bg/45"
+                  className="h-32 overflow-hidden rounded-[24px] border border-border-subtle bg-app-bg/45 sm:h-40 sm:rounded-[30px]"
                   iconClassName="text-accent-gold"
                   imgClassName="h-full w-full object-cover"
                 />
 
-                <div className="space-y-4 lg:space-y-5">
-                  <div className="space-y-3">
-                    <h3 className="text-[1.3rem] font-bold leading-tight text-text-primary md:text-[1.6rem]">
+                <div className="space-y-3 sm:space-y-4 lg:space-y-5">
+                  <div className="space-y-2 sm:space-y-3">
+                    <h3 className="text-[1.08rem] font-bold leading-tight text-text-primary sm:text-[1.3rem] md:text-[1.6rem]">
                       {edu.degree}
                     </h3>
-                    <div className="flex flex-wrap items-center gap-3">
-                      <p className="text-sm font-extrabold uppercase tracking-[0.16em] text-[#6FA0D2]">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                      <p className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-[#6FA0D2] sm:text-sm sm:tracking-[0.16em]">
                         {edu.institution}
                       </p>
                       <a
@@ -127,7 +126,7 @@ export const Education = () => {
                     </div>
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-3">
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                     <div className="inline-flex items-center gap-2 rounded-xl border border-border-subtle bg-app-bg/55 px-3 py-2 text-[11px] font-extrabold uppercase tracking-[0.16em] text-text-secondary">
                       <CalendarRange size={14} className="text-[#5E5AAE]" />
                       <span>{edu.year}</span>
@@ -141,7 +140,7 @@ export const Education = () => {
 
                   <RichTextRenderer
                     content={edu.descriptionHtml}
-                    className="max-w-4xl text-sm leading-relaxed text-text-secondary"
+                    className="max-w-4xl text-[13px] leading-relaxed text-text-secondary sm:text-sm"
                   />
                 </div>
               </div>

@@ -80,8 +80,7 @@ export const Experience = () => {
           viewport={{ once: true }}
           className="mb-12 text-center"
         >
-          
-          <h2 className="text-3xl font-bold tracking-tight md:text-5xl">Experience</h2>
+          <h2 className="text-[2rem] font-bold tracking-tight sm:text-3xl md:text-5xl">Experience</h2>
         </motion.div>
 
         <div className="grid gap-6">
@@ -94,24 +93,24 @@ export const Experience = () => {
               transition={{ delay: index * 0.06 }}
               className="glass-card p-2 sm:p-3"
             >
-              <div className="grid gap-6 lg:grid-cols-[210px_minmax(0,1fr)]">
+              <div className="grid gap-4 sm:gap-6 lg:grid-cols-[210px_minmax(0,1fr)]">
                 <MediaThumb
                   src={exp.image}
                   images={exp.images}
                   alt={exp.imageAlt}
                   icon={Building2}
                   label={exp.company}
-                  className="h-[230px] overflow-hidden rounded-3xl border border-border-subtle bg-app-bg/45"
+                  className="h-[180px] overflow-hidden rounded-[22px] border border-border-subtle bg-app-bg/45 sm:h-[230px] sm:rounded-3xl"
                   iconClassName="text-accent-gold"
                   imgClassName="h-full w-full object-cover"
                 />
 
-                <div className="space-y-5 pr-2">
-                  <div className="space-y-3">
+                <div className="space-y-4 pr-0 sm:space-y-5 sm:pr-2">
+                  <div className="space-y-2 sm:space-y-3">
                     <div>
-                      <h3 className="text-4xl font-bold tracking-tight text-accent-indigo">{exp.title}</h3>
-                      <div className="mt-2 flex flex-wrap items-center gap-3">
-                        <span className="text-sm font-black uppercase tracking-[0.14em] text-sky-300">{exp.company}</span>
+                      <h3 className="text-[1.55rem] font-bold tracking-tight text-accent-indigo sm:text-4xl">{exp.title}</h3>
+                      <div className="mt-2 flex flex-wrap items-center gap-2 sm:gap-3">
+                        <span className="text-[11px] font-black uppercase tracking-[0.12em] text-sky-300 sm:text-sm sm:tracking-[0.14em]">{exp.company}</span>
                         {exp.websiteUrl && exp.websiteUrl !== '#' ? (
                           <a
                             href={exp.websiteUrl}
@@ -126,7 +125,7 @@ export const Experience = () => {
                       </div>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-8 border-b border-border-subtle pb-5 text-[11px] font-extrabold uppercase tracking-[0.12em] text-text-secondary">
+                    <div className="flex flex-wrap items-center gap-4 border-b border-border-subtle pb-4 text-[10px] font-extrabold uppercase tracking-[0.1em] text-text-secondary sm:gap-8 sm:pb-5 sm:text-[11px] sm:tracking-[0.12em]">
                       <span className="inline-flex items-center gap-2">
                         <MapPin size={14} className="text-accent-indigo" />
                         <span>{exp.location}</span>
@@ -140,7 +139,7 @@ export const Experience = () => {
 
                   <RichTextRenderer
                     content={exp.descriptionHtml}
-                    className="text-[14px] leading-relaxed text-[#93a6c4] md:text-[16px]"
+                    className="text-[13px] leading-relaxed text-[#93a6c4] sm:text-[14px] md:text-[16px]"
                   />
                 </div>
               </div>

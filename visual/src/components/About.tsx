@@ -48,18 +48,18 @@ export const About = () => {
 
   return (
     <section id="about" className="section-padding">
-      <div className="mx-auto grid max-w-[1240px] gap-8 xl:grid-cols-[minmax(0,0.94fr)_minmax(0,1.06fr)] xl:items-start">
+      <div className="mx-auto grid max-w-[1240px] gap-6 sm:gap-8 xl:grid-cols-[minmax(0,0.94fr)_minmax(0,1.06fr)] xl:items-start">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="space-y-8"
+          className="space-y-6 sm:space-y-8"
         >
-          <div className="space-y-4">
-            <p className="text-sm font-extrabold uppercase tracking-[0.38em] text-accent-gold md:text-[1.00rem]">
+          <div className="space-y-3 sm:space-y-4">
+            <p className="text-[11px] font-extrabold uppercase tracking-[0.28em] text-accent-gold sm:text-sm sm:tracking-[0.38em] md:text-[1.00rem]">
               About
             </p>
-            <h2 className="max-w-2xl text-3xl font-bold tracking-tight md:text-5xl">
+            <h2 className="max-w-[13ch] text-[2rem] font-bold leading-[1.02] tracking-tight sm:max-w-2xl sm:text-3xl md:text-5xl">
               Practical pipeline thinking for analytical systems that need clarity and trust.
             </h2>
           </div>
@@ -85,7 +85,7 @@ export const About = () => {
           <div className="group relative overflow-hidden rounded-[2rem] border border-border-subtle bg-app-card/45 shadow-[0_26px_80px_rgba(0,0,0,0.28)]">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(214,190,115,0.12),transparent_48%),linear-gradient(180deg,rgba(255,255,255,0.02),transparent_36%)] opacity-80" />
             {about.profilePictureUrl ? (
-              <div className="relative aspect-[0.9/1] min-h-[460px] overflow-hidden">
+              <div className="relative aspect-[0.86/1] min-h-[280px] overflow-hidden sm:aspect-[0.9/1] sm:min-h-[460px]">
                 <img
                   src={about.profilePictureUrl}
                   alt={about.fullName ? `${about.fullName} portrait` : 'Profile portrait'}
@@ -95,7 +95,7 @@ export const About = () => {
                 <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(10,14,14,0.02),rgba(10,14,14,0.18)_70%,rgba(10,14,14,0.44))]" />
               </div>
             ) : (
-              <div className="relative flex aspect-[0.9/1] min-h-[460px] items-center justify-center bg-[linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01)),radial-gradient(circle_at_top,rgba(214,190,115,0.09),transparent_55%)]">
+              <div className="relative flex aspect-[0.86/1] min-h-[280px] items-center justify-center bg-[linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01)),radial-gradient(circle_at_top,rgba(214,190,115,0.09),transparent_55%)] sm:aspect-[0.9/1] sm:min-h-[460px]">
                 <div className="flex flex-col items-center gap-4 text-center">
                   <span className="flex h-18 w-18 items-center justify-center rounded-full border border-border-subtle bg-app-card/55 text-accent-gold/90">
                     <ImageOff className="h-8 w-8" />
