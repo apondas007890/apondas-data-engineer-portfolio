@@ -1,20 +1,21 @@
 # Visual Portfolio — Apon Kumar Das
 
-A premium dark **Visual Portfolio** experience for showcasing my Data Engineering profile, projects, skills, experience, education, certifications, practice dashboard, resume, and contact page.
+A premium dark **Visual Portfolio** experience built to present my Data Engineering profile through a polished, animated, and recruiter-friendly interface.
 
 ---
 
-## Live URL
+## Live Preview
 
-```txt
-https://apondas-data-engineer-portfolio.vercel.app/visualportfolio
-```
+| Page | Link |
+|---|---|
+| Visual Portfolio | [Open Visual Portfolio](https://apondas-data-engineer-portfolio.vercel.app/visualportfolio) |
+| Contact Page | [Open Contact Page](https://apondas-data-engineer-portfolio.vercel.app/visualportfolio/contact) |
 
 ---
 
 ## Overview
 
-The Visual Portfolio is a polished front-facing portfolio experience with a dark data-engineering aesthetic.
+The Visual Portfolio is the front-facing portfolio experience of this project. It focuses on clean presentation, smooth animations, data-engineering themed visuals, and structured sections for showcasing professional information.
 
 It includes:
 
@@ -27,6 +28,7 @@ It includes:
 - Education section
 - Certifications section
 - Practice dashboard
+- Resume section
 - Contact page
 - Responsive layout
 
@@ -40,79 +42,5 @@ React
 TypeScript
 Tailwind CSS
 Framer Motion
-React Icons / Iconify
-```
-
----
-
-## Main Components
-
-```txt
-About.tsx
-Certifications.tsx
-Contact.tsx
-DataEngineeringFocusPanel.tsx
-Education.tsx
-Experience.tsx
-Footer.tsx
-Hero.tsx
-HeroOrbit.tsx
-HomeHero.tsx
-MediaThumb.tsx
-MiniProjectVisual.tsx
-Practice.tsx
-ProfileVisual.tsx
-Projects.tsx
-RichTextRenderer.tsx
-Skills.tsx
-VisualPortfolioNav.tsx
-```
-
----
-
-## Routes
-
-```txt
-/visualportfolio          → Visual Portfolio
-/visualportfolio/contact  → Contact Page
-```
-
----
-
-## Design Palette
-
-```txt
-Main background: #0a0e0f
-Cyan accent:     #00eeff
-Gold accent:     #d6be73
-Primary text:    #f5f5f5
-Muted text:      rgba(245,245,245,0.65)
-Card background: #101717
-Border:          rgba(255,255,255,0.10)
-```
-
----
-
-## Contact Form
-
-The contact page uses a public Web3Forms key.
-
-Required environment variable:
-
-```env
-NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY=your_web3forms_access_key
-```
-
----
-
-## Purpose
-
-This visual experience is built to present my Data Engineering work in a polished, modern, and recruiter-friendly way.
-
----
-
-## Author
-
-**Apon Kumar Das**  
-Data Engineer  
-Dhaka, Bangladesh
+React Icons
+Iconify
