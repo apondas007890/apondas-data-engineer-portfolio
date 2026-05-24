@@ -2,11 +2,11 @@
 
 A modern, dark-themed **Data Engineering Portfolio** built with modern full-stack tools.
 
-![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
-![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white)
-![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
+![Next.js](https://img.shields.io/badge/Next.js-black?style=for-the-badge&logo=nextdotjs&logoColor=white)
+![React](https://img.shields.io/badge/React-%2320232a?style=for-the-badge&logo=react&logoColor=%2361dafb)
+![TypeScript](https://img.shields.io/badge/TypeScript-%233178c6?style=for-the-badge&logo=typescript&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-%233FCF8E?style=for-the-badge&logo=supabase&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-%23000000?style=for-the-badge&logo=vercel&logoColor=white)
 
 This repository represents my personal **Data Engineering portfolio platform**—a full-stack project designed to showcase my technical skills, projects, experience, certifications, and SQL-inspired portfolio interactions. It combines modern frontend design, Supabase-backed dynamic content, admin management workflows, and deployment-ready architecture to present my growth as a Data Engineer in a practical and professional way. 
 
